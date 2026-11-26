@@ -60,7 +60,7 @@ def text_w(s: str, size: float) -> float:
     w = 0.0
     for ch in s:
         if "ऀ" <= ch <= "ॿ":
-            w += 0.58          # Devanagari
+            w += 0.47          # Devanagari (Hind Bold, measured 0.463em)
         elif ch in "mwMW":
             w += 0.78
         elif ch.isupper():
@@ -203,12 +203,12 @@ class Board:
 
     # ------------------------------------------------ commands
     def plan_box(self, x, y, w, h, label):
-        sz, lines = 20, []
+        sz, lines = 24, []
         if label:
-            sz, lines, ok = fit_text(label, w - 16, 20, min_size=14, max_lines=2)
+            sz, lines, ok = fit_text(label, w - 16, 24, min_size=18, max_lines=2)
             need_h = len(lines) * sz * 1.18 + 12
             if not ok:  # grow the box so the label fits at a readable size
-                sz, lines, _ = fit_text(label, 300, 18, min_size=14, max_lines=2)
+                sz, lines, _ = fit_text(label, 320, 22, min_size=16, max_lines=2)
                 need_w = max(text_w(l, sz) for l in lines) + 20
                 x -= (need_w - w) / 2
                 w = need_w
@@ -250,7 +250,7 @@ class Board:
         out = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" stroke="{col}" stroke-width="3" '
                f'fill="{col}" fill-opacity="0.08"/>')
         if label:
-            sz, lines, ok = fit_text(label, 2 * r * 0.82, 18, min_size=14, max_lines=2)
+            sz, lines, ok = fit_text(label, 2 * r * 0.82, 22, min_size=15, max_lines=2)
             if ok and len(lines) * sz * 1.18 <= 2 * r * 0.8:
                 th = len(lines) * sz * 1.18
                 out += self._text_svg(lines, cx, cy - th / 2, sz, col, "middle")
