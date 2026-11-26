@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 404" width="960" height="404" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6B6F80"/>
+    </marker>
+    <style>
+      .t  { font-size: 16px; font-weight: 700; }
+      .d  { font-size: 13.5px; }
+      .lane { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; fill: #8A6A2E; }
+      .note { font-size: 13px; fill: #4A4F63; font-style: italic; }
+      .you rect.b { fill: #1C2541; stroke: #1C2541; }
+      .you text { fill: #FDF8EF; }
+      .ai rect.b { fill: #FBEBCD; stroke: #B7873C; }
+      .ai text { fill: #1C2541; }
+      .pill { fill: #FFFFFF; stroke: #B7873C; }
+      .ai text.pt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #7A5418; }
+      .ln { stroke: #6B6F80; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="960" height="404" rx="14" fill="#FDF8EF"/>
+
+  <!-- ===== Lane 1: the lesson ===== -->
+  <text class="lane" x="24" y="40">THE LESSON</text>
+
+  <!-- loop back: next paragraph -->
+  <path class="ln" d="M840 60 V36 Q840 26 830 26 H370 Q360 26 360 36 V56" marker-end="url(#a)"/>
+  <rect x="404" y="16" width="392" height="20" fill="#FDF8EF"/>
+  <text class="note" x="600" y="31" text-anchor="middle">next paragraph, or any one you click (already prepared)</text>
+
+  <g class="you">
+    <rect class="b" x="20" y="60" width="200" height="124" rx="10"/>
+    <text class="t" x="36" y="88">1 · You upload a paper</text>
+    <text class="d" x="36" y="114">Your browser splits the</text>
+    <text class="d" x="36" y="133">PDF into paragraphs,</text>
+    <text class="d" x="36" y="152">even 2-column pages.</text>
+  </g>
+
+  <g class="ai">
+    <rect class="b" x="260" y="60" width="200" height="124" rx="10"/>
+    <text class="t" x="276" y="88">2 · Guru plans it</text>
+    <text class="d" x="276" y="114">Explains the paragraph in</text>
+    <text class="d" x="276" y="133">Kanpuriya Hindi: what to</text>
+    <text class="d" x="276" y="152">SAY and what to DRAW.</text>
+    <rect class="pill" x="276" y="160" width="94" height="18" rx="9"/>
+    <text class="pt" x="323" y="173" text-anchor="middle">sarvam-105b</text>
+  </g>
+
+  <g class="ai">
+    <rect class="b" x="500" y="60" width="200" height="124" rx="10"/>
+    <text class="t" x="516" y="88">3 · Voice + whiteboard</text>
+    <text class="d" x="516" y="114">Each line gets Guru's</text>
+    <text class="d" x="516" y="133">voice, and each drawing</text>
+    <text class="d" x="516" y="152">becomes a tidy sketch.</text>
+    <rect class="pill" x="516" y="160" width="68" height="18" rx="9"/>
+    <text class="pt" x="550" y="173" text-anchor="middle">bulbul</text>
+  </g>
+
+  <g class="you">
+    <rect class="b" x="740" y="60" width="200" height="124" rx="10"/>
+    <text class="t" x="756" y="88">4 · You watch &amp; listen</text>
+    <text class="d" x="756" y="114">Sentence by sentence,</text>
+    <text class="d" x="756" y="133">the sketch draws itself</text>
+    <text class="d" x="756" y="152">and the paragraph glows</text>
+    <text class="d" x="756" y="171">on the PDF.</text>
+  </g>
+
+  <path class="ln" d="M222 122 H256" marker-end="url(#a)"/>
+  <path class="ln" d="M462 122 H496" marker-end="url(#a)"/>
+  <path class="ln" d="M702 122 H736" marker-end="url(#a)"/>
+
+  <!-- ===== Lane 2: a doubt ===== -->
+  <text class="lane" x="24" y="228">GOT A DOUBT? ANY TIME</text>
+
+  <g class="you">
+    <rect class="b" x="20" y="242" width="200" height="110" rx="10"/>
+    <text class="t" x="36" y="270">Press M</text>
+    <text class="d" x="36" y="296">Guru stops mid-sentence.</text>
+    <text class="d" x="36" y="315">Ask out loud, then press</text>
+    <text class="d" x="36" y="334">M again to send.</text>
+  </g>
+
+  <g class="ai">
+    <rect class="b" x="260" y="242" width="200" height="110" rx="10"/>
+    <text class="t" x="276" y="270">He hears you</text>
+    <text class="d" x="276" y="296">Hindi, English or a mix</text>
+    <text class="d" x="276" y="315">is turned into text.</text>
+    <rect class="pill" x="276" y="326" width="64" height="18" rx="9"/>
+    <text class="pt" x="308" y="339" text-anchor="middle">saaras</text>
+  </g>
+
+  <g class="ai">
+    <rect class="b" x="500" y="242" width="200" height="110" rx="10"/>
+    <text class="t" x="516" y="270">He answers</text>
+    <text class="d" x="516" y="296">on a fresh whiteboard,</text>
+    <text class="d" x="516" y="315">then waits for you.</text>
+    <rect class="pill" x="516" y="326" width="94" height="18" rx="9"/>
+    <text class="pt" x="563" y="339" text-anchor="middle">sarvam-105b</text>
+  </g>
+
+  <g class="you">
+    <rect class="b" x="740" y="242" width="200" height="110" rx="10"/>
+    <text class="t" x="756" y="270">Say “aage badho”</text>
+    <text class="d" x="756" y="296">Guru goes back and picks</text>
+    <text class="d" x="756" y="315">up the same sentence.</text>
+    <text class="d" x="756" y="334">(Or ask another doubt.)</text>
+  </g>
+
+  <path class="ln" d="M222 297 H256" marker-end="url(#a)"/>
+  <path class="ln" d="M462 297 H496" marker-end="url(#a)"/>
+  <path class="ln" d="M702 297 H736" marker-end="url(#a)"/>
+  <!-- resume: back up to step 4 -->
+  <path class="ln" d="M840 240 V188" marker-end="url(#a)"/>
+  <text class="note" x="852" y="218">resume</text>
+
+  <!-- legend -->
+  <rect x="20" y="372" width="14" height="14" rx="3" fill="#1C2541"/>
+  <text class="d" x="42" y="384" fill="#1C2541">you do this</text>
+  <rect x="140" y="372" width="14" height="14" rx="3" fill="#FBEBCD" stroke="#B7873C"/>
+  <text class="d" x="162" y="384" fill="#1C2541">a Sarvam AI model does this</text>
+</svg>
