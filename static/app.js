@@ -9,27 +9,33 @@ const ink = $("ink"), board = $("board"), pagesEl = $("pages");
 const S = {
   title: "", paper: "", paras: [], views: {}, cur: 0,
   steps: null, step: 0,
-  mode: "idle", // idle | loading | playing | paused | doubt | await_go
+  mode: "idle", // idle | loading | playing | doubt | await_go
+  paused: false, answering: false, // paused works on top of any mode; answering = speaking a doubt answer
   playId: 0, history: [], savedBoard: null, savedViewBox: null,
 };
 const explainCache = new Map();
 const ttsCache = new Map();
 const audio = new Audio();
 let stopSpeaking = null;
+let resumeWaiters = [];
 
 // ---------------------------------------------------------------- utils
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function setStatus(text, cls = "") { const s = $("status"); s.textContent = text; s.className = "status " + cls; }
+// Guru is "active" whenever he is talking or about to talk.
+const isActive = () => S.mode === "loading" || S.mode === "playing" || S.answering;
 function setMode(m) {
   S.mode = m;
-  const playing = m === "playing";
-  $("play").textContent = playing ? "⏸ Ruko" : m === "paused" ? "▶ Chalo" : "▶ Shuru karo";
-  $("interrupt").disabled = !(m === "playing" || m === "paused" || m === "loading");
+  const active = isActive();
+  $("play").textContent = S.paused ? "▶ Chalo" : active ? "⏸ Ruko" : "▶ Shuru karo";
+  $("play").disabled = !S.paras.length || (!active && !S.paused && (m === "doubt" || m === "await_go"));
+  $("interrupt").disabled = !(m === "playing" || m === "loading");
   $("prev").disabled = $("next").disabled = !S.paras.length || m === "doubt" || m === "await_go";
-  $("play").disabled = !S.paras.length || m === "doubt" || m === "await_go";
   $("para-count").textContent = S.paras.length ? `para ${S.cur + 1} / ${S.paras.length}` : "";
-  setStatus({ idle: "tayyar", loading: "soch rahe hain…", playing: "samjha rahe hain", paused: "ruke hue",
-    doubt: "doubt mode", await_go: "aapke 'aage badho' ka intezaar" }[m], m === "doubt" || m === "await_go" ? "doubt" : m === "loading" ? "busy" : "");
+  if (S.paused) return setStatus("ruke hue — ▶ ya P dabao", "busy");
+  setStatus({ idle: "tayyar", loading: "soch rahe hain…", playing: "samjha rahe hain",
+    doubt: S.answering ? "doubt samjha rahe hain" : "doubt mode", await_go: "aapke 'aage badho' ka intezaar" }[m],
+    m === "doubt" || m === "await_go" ? "doubt" : m === "loading" ? "busy" : "");
 }
 async function postJSON(url, body) {
   const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -244,8 +250,28 @@ function ttsUrl(text) {
   }
   return ttsCache.get(key);
 }
-async function speak(text) {
+// Resolves once Guru is not paused (immediately if he isn't).
+function waitWhilePaused() { return S.paused ? new Promise((r) => resumeWaiters.push(r)) : Promise.resolve(); }
+function pause() {
+  if (S.paused || !isActive()) return;
+  S.paused = true;
+  audio.pause();
+  if ("speechSynthesis" in window) speechSynthesis.pause();
+  setMode(S.mode);
+}
+function resume() {
+  if (!S.paused) return;
+  S.paused = false;
+  if (stopSpeaking && audio.src && !audio.ended && audio.currentTime > 0) audio.play().catch(() => {});
+  if ("speechSynthesis" in window) speechSynthesis.resume();
+  const w = resumeWaiters; resumeWaiters = []; w.forEach((r) => r());
+  setMode(S.mode);
+}
+// id: the playId this speech belongs to; if it changed (interrupt, M, skip), stay silent.
+async function speak(text, id = S.playId) {
   const url = await ttsUrl(text);
+  await waitWhilePaused();
+  if (id !== S.playId) return "stopped"; // cancelled while the audio was loading or while paused
   return new Promise((resolve) => {
     stopSpeaking = () => { stopSpeaking = null; resolve("stopped"); };
     const done = () => { if (stopSpeaking) { stopSpeaking = null; resolve("done"); } };
@@ -264,6 +290,9 @@ function hush() {
   audio.pause(); audio.onended = null;
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   if (stopSpeaking) stopSpeaking();
+  // a hush cancels any pause too; waiters wake up and see their playId is stale
+  S.paused = false;
+  const w = resumeWaiters; resumeWaiters = []; w.forEach((r) => r());
 }
 
 // ---------------------------------------------------------------- lesson engine
@@ -280,12 +309,13 @@ function explain(i) {
 
 async function playSteps(steps, from, id, track = true, redrawFirst = true) {
   for (let k = from; k < steps.length; k++) {
+    await waitWhilePaused(); // don't draw the next sentence while paused
     if (id !== S.playId) return false;
     if (track) S.step = k; // doubt answers must not move the paragraph's resume point
     $("caption").textContent = steps[k].say;
     if (steps[k + 1]) ttsUrl(steps[k + 1].say); // prefetch next sentence's audio
     if (k !== from || redrawFirst) draw(steps[k].svg); // on resume, that step's drawing is already on the board
-    await speak(steps[k].say);
+    await speak(steps[k].say, id);
     if (id !== S.playId) return false;
     await sleep(350);
   }
@@ -315,7 +345,7 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   const finished = await playSteps(steps, stepFrom, id, true, !keepBoard);
   if (!finished) return;
   if (i + 1 < S.paras.length) { await sleep(900); if (id === S.playId) runFrom(i + 1); }
-  else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई। 🎉"; speak($("caption").textContent); }
+  else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई। 🎉"; speak($("caption").textContent, id); }
 }
 function startPara(i) { hush(); S.history = []; runFrom(Math.max(0, Math.min(S.paras.length - 1, i))); }
 function stopAll() { S.playId++; hush(); }
@@ -345,13 +375,15 @@ async function ask(q) {
     $("thinking").hidden = true;
     S.history.push({ q, a: steps.map((s) => s.say).join(" ") });
     $("question").value = "";
-    setMode("doubt"); setStatus("doubt samjha rahe hain", "doubt");
+    S.answering = true; setMode("doubt");
     const ok = await playSteps(steps, 0, id, false);
-    if (ok) awaitGo();
+    S.answering = false;
+    if (ok) awaitGo(); else setMode(S.mode);
   } catch (e) {
+    if (id !== S.playId) return;
     $("thinking").hidden = true;
     $("caption").textContent = "⚠️ " + e.message; awaitGo();
-  } finally { $("ask").disabled = false; }
+  } finally { $("ask").disabled = false; if (id === S.playId) S.answering = false; }
 }
 function awaitGo() { setMode("await_go"); $("go-row").hidden = false; $("question").placeholder = "ek aur sawaal? (ya 'aage badho')"; }
 
@@ -372,8 +404,13 @@ const GO_RE = { test: (t) => GO_WORDS.test(t) && !NOT_WORDS.test(t) };
 let rec = null, chunks = [];
 async function toggleMic() {
   if (rec && rec.state === "recording") { rec.stop(); return; }
-  if (S.mode === "playing" || S.mode === "paused" || S.mode === "loading") interrupt(false);
-  else if (S.mode === "idle") { S.savedBoard = ink.innerHTML; S.savedViewBox = board.getAttribute("viewBox"); setMode("doubt"); $("doubt").hidden = false; $("go-row").hidden = true; }
+  // Shut Guru up first, synchronously, whatever he was doing — then open the mic.
+  if (S.mode === "playing" || S.mode === "loading") interrupt(false);
+  else {
+    S.playId++; hush(); S.answering = false; $("thinking").hidden = true; // doubt answer, end-of-paper line, anything
+    if (S.mode === "idle") { S.savedBoard = ink.innerHTML; S.savedViewBox = board.getAttribute("viewBox"); }
+    setMode("doubt"); $("doubt").hidden = false; $("go-row").hidden = true;
+  }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     chunks = []; rec = new MediaRecorder(stream);
@@ -389,8 +426,10 @@ async function toggleMic() {
         const transcript = d.transcript;
         if (!transcript) { setStatus("kuch sunai nahi diya", "doubt"); return; }
         $("question").value = transcript;
-        if (S.mode === "await_go" && GO_RE.test(transcript) && transcript.split(/\s+/).length <= 5) goAhead();
-        else ask(transcript);
+        if (S.mode === "doubt" || S.mode === "await_go") {
+          if (GO_RE.test(transcript) && transcript.split(/\s+/).length <= 5) { goAhead(); return; }
+        }
+        ask(transcript);
       } catch (e) { setStatus("mic error: " + e.message, "doubt"); }
     };
     rec.start(); $("mic").classList.add("rec"); $("mic").textContent = "⏹";
@@ -407,11 +446,12 @@ drop.ondragover = (e) => { e.preventDefault(); $("drop").classList.add("over"); 
 drop.ondragleave = () => $("drop").classList.remove("over");
 drop.ondrop = (e) => { e.preventDefault(); $("drop").classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) loadPdf(f); };
 
-$("play").onclick = () => {
-  if (S.mode === "idle") runFrom(S.cur, 0);
-  else if (S.mode === "playing") { audio.pause(); if ("speechSynthesis" in window) speechSynthesis.pause(); setMode("paused"); }
-  else if (S.mode === "paused") { if (audio.src && !audio.ended) audio.play(); if ("speechSynthesis" in window) speechSynthesis.resume(); setMode("playing"); }
-};
+function togglePause() {
+  if (S.paused) resume();
+  else if (isActive()) pause();
+  else if (S.mode === "idle" && S.paras.length) runFrom(S.cur, 0);
+}
+$("play").onclick = togglePause;
 $("prev").onclick = () => startPara(S.cur - 1);
 $("next").onclick = () => startPara(S.cur + 1);
 $("interrupt").onclick = interrupt;
@@ -428,6 +468,8 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "KeyM" && !e.repeat && rec && rec.state === "recording") { e.preventDefault(); toggleMic(); return; }
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   if (e.code === "Space") { e.preventDefault(); if (S.mode === "await_go") goAhead(); else interrupt(); }
+  // P: pause / resume, in any state
+  if (e.code === "KeyP" && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); togglePause(); }
   // M: stop Guru and record a spoken question; press M again to send it
   if (e.code === "KeyM" && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey && S.paras.length) { e.preventDefault(); toggleMic(); }
 });
