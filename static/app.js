@@ -406,6 +406,7 @@ function interrupt(focus = true) {
   S.savedBoard = ink.innerHTML; S.savedViewBox = board.getAttribute("viewBox");
   setMode("doubt");
   $("doubt").hidden = false; $("go-row").hidden = true;
+  $("doubt").scrollIntoView({ block: "nearest" }); // on short windows, make sure the question box is visible
   $("caption").textContent = "हाँ गुरु, बोलो — का नहीं समझे?";
   $("question").value = ""; if (focus) $("question").focus();
 }
