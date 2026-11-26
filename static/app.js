@@ -485,7 +485,6 @@ document.addEventListener("keydown", (e) => {
   // while recording, M always means "done, send it" — even if a text box has focus
   if (e.code === "KeyM" && !e.repeat && rec && rec.state === "recording") { e.preventDefault(); toggleMic(); return; }
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
-  if (e.code === "Space") { e.preventDefault(); if (S.mode === "await_go") goAhead(); else interrupt(); }
   // P: pause / resume, in any state
   if (e.code === "KeyP" && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); togglePause(); }
   // M: stop Guru and record a spoken question; press M again to send it
