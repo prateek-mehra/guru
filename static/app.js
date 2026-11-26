@@ -36,7 +36,7 @@ function setMode(m) {
   const active = isActive();
   $("play").innerHTML = S.paused ? ICON.play + "<span>Chalo</span>" : active ? ICON.pause + "<span>Ruko</span>" : ICON.play + "<span>Shuru karo</span>";
   $("play").disabled = !S.paras.length || (!active && !S.paused && (m === "doubt" || m === "await_go"));
-  $("prev").disabled = $("next").disabled = !S.paras.length || m === "doubt" || m === "await_go";
+  $("prev").disabled = $("next").disabled = !S.paras.length;
   $("para-count").textContent = S.paras.length ? `para ${S.cur + 1} / ${S.paras.length}` : "";
   if (S.paused) return setStatus("ruke hue — P dabao", "busy");
   setStatus({ idle: "tayyar", loading: "soch rahe hain…", playing: "samjha rahe hain",
@@ -198,8 +198,11 @@ function addHitArea(p, i) {
   for (const r of p.rects) {
     const div = pageDiv(r[4]);
     const c = rectToCss(p, r), el = document.createElement("div");
-    el.className = "para-hit"; Object.assign(el.style, { left: c.left + "px", top: c.top + "px", width: c.width + "px", height: c.height + "px" });
-    el.title = "Yahan se samjhao"; el.onclick = () => { if (S.mode !== "doubt" && S.mode !== "await_go") startPara(i); };
+    // pad each line's hit box to cover the gap to the next line, so anywhere on the paragraph works
+    const pad = c.height * 0.35;
+    el.className = "para-hit";
+    Object.assign(el.style, { left: c.left - 3 + "px", top: c.top - pad + "px", width: c.width + 6 + "px", height: c.height + 2 * pad + "px" });
+    el.title = "Yahan se samjhao"; el.onclick = () => startPara(i); // works in every state, doubt mode included
     div.appendChild(el);
   }
 }
@@ -385,8 +388,15 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   if (i + 1 < S.paras.length) { await sleep(900 / speed); if (id === S.playId) runFrom(i + 1); }
   else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई।"; speak($("caption").textContent, id); }
 }
-function startPara(i) { hush(); S.history = []; runFrom(Math.max(0, Math.min(S.paras.length - 1, i))); }
-function stopAll() { S.playId++; hush(); }
+// Leave doubt mode (if we're in it) without resuming anything.
+function closeDoubt() {
+  if (rec && rec.state === "recording") { rec.onstop = null; rec.stop(); rec.stream?.getTracks().forEach((t) => t.stop()); $("mic").classList.remove("rec"); $("mic").innerHTML = ICON.mic; }
+  S.answering = false;
+  $("doubt").hidden = true; $("go-row").hidden = true;
+  document.querySelector(".board-wrap").classList.remove("doubt-mode");
+}
+function startPara(i) { S.playId++; hush(); closeDoubt(); S.history = []; runFrom(Math.max(0, Math.min(S.paras.length - 1, i))); }
+function stopAll() { S.playId++; hush(); $("thinking").hidden = true; }
 
 // ---------------------------------------------------------------- doubts / interrupts
 function interrupt(focus = true) {
