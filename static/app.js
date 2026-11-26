@@ -45,7 +45,10 @@ async function postJSON(url, body) {
 
 // ---------------------------------------------------------------- PDF -> paragraphs
 function extractParas(items, pageW, pageNo) {
-  const its = items.filter((it) => it.str && it.str.trim()).map((it) => {
+  // Skip rotated text (e.g. the vertical "arXiv:… [cs.CV] 10 Dec 2015" stamp in the margin):
+  // it otherwise gets merged into body lines and drags whole paragraphs out of order.
+  const horizontal = (t) => Math.abs(t[1]) < Math.abs(t[0]) * 0.05 && Math.abs(t[2]) < Math.abs(t[3]) * 0.05 && t[0] > 0;
+  const its = items.filter((it) => it.str && it.str.trim() && horizontal(it.transform)).map((it) => {
     const t = it.transform;
     return { s: it.str, x: t[4], y: t[5], w: it.width, h: Math.hypot(t[2], t[3]) || it.height || 10 };
   });
@@ -97,15 +100,34 @@ function extractParas(items, pageW, pageNo) {
 }
 
 function tidyParas(raw) {
+  // body text size = the font size carrying the most characters
+  const bySize = {};
+  for (const p of raw) bySize[p.h.toFixed(1)] = (bySize[p.h.toFixed(1)] || 0) + p.text.length;
+  const bodyH = parseFloat(Object.entries(bySize).sort((a, b) => b[1] - a[1])[0]?.[0] || "10");
+  const junk = (t) => {
+    const toks = t.split(/\s+/).filter(Boolean);
+    const numeric = toks.filter((w) => /^[\d.,%()\-+e]+$/i.test(w)).length;
+    return toks.length >= 3 && numeric / toks.length > 0.4; // chart ticks like "0 1 2 3 4 5 6"
+  };
   const out = [];
   for (let i = 0; i < raw.length; i++) {
     const p = { ...raw[i], rects: [...raw[i].rects] };
-    if (p.text.length < 4 || /^[\d\s.,:]+$/.test(p.text) || /^arXiv:/i.test(p.text)) continue;
+    p.text = p.text.replace(/arXiv:\d{4}\.\d{4,5}(v\d+)?(\s*\[[^\]]*\])?(\s*\d{1,2}\s+[A-Z][a-z]{2}\s+\d{4})?\s*/g, "").trim();
+    if (p.text.length < 4 || /^[\d\s.,:]+$/.test(p.text) || junk(p.text)) continue;
+    // tiny-font scraps (figure labels, axis text) — but keep real headings, which are big
+    if (p.text.length < 60 && p.h < bodyH * 0.85) continue;
     if (/^(\d+\.?\s*)?(references|bibliography)\s*$/i.test(p.text)) break; // stop at references
     const last = out[out.length - 1];
-    // mid-sentence break (column/page/figure) -> continue the same paragraph
-    if (last && !last.short && !/[.:?!)\]]$/.test(last.text.trim()) && /^[a-z(]/.test(p.text)) {
-      last.text += " " + p.text; last.rects.push(...p.rects); continue;
+    // mid-sentence break (column/page/figure) -> continue the same paragraph.
+    // Look past figure/table captions that pdf order puts between the two halves.
+    const isCaption = (q) => /^(fig(ure)?\.?|table)\s*\d/i.test(q.text);
+    let open = null;
+    for (let k = out.length - 1; k >= 0 && k >= out.length - 3; k--) {
+      if (isCaption(out[k])) continue;
+      open = out[k]; break;
+    }
+    if (open && !open.short && !/[.:?!)\]]$/.test(open.text.trim()) && /^[a-z(]/.test(p.text)) {
+      open.text += " " + p.text; open.rects.push(...p.rects); continue;
     }
     // short pieces (headings, caption scraps) get glued onto the following paragraph
     if (last && last.short && last.page === p.page) {
