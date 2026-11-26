@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carpathy — Paper samjho, Kanpur style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">Carpathy <span>· paper samjho, Kanpur style</span></div>
+    <label class="upload">📄 PDF upload karo
+      <input id="file" type="file" accept="application/pdf" hidden />
+    </label>
+  </header>
+
+  <main>
+    <section id="paper-pane">
+      <div id="drop" class="drop">
+        <div>
+          <h2>Research paper ka PDF yahan daalo</h2>
+          <p>Guru har paragraph dheere dheere Kanpuriya mein samjhayenge, whiteboard pe drawing ke saath.<br />
+          Beech mein kuch na samjhe to <b>✋ Ruko</b> dabao (ya <kbd>Space</kbd>) aur sawaal poochho.</p>
+        </div>
+      </div>
+      <div id="pages"></div>
+    </section>
+
+    <section id="board-pane">
+      <div class="board-head">
+        <span id="board-label">Whiteboard</span>
+        <span id="status" class="status">tayyar</span>
+      </div>
+      <div class="board-wrap">
+        <svg id="board" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="rough"><feTurbulence baseFrequency="0.03" numOctaves="2" result="n" seed="3"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+          </defs>
+          <g id="ink" filter="url(#rough)"></g>
+        </svg>
+        <div id="thinking" class="thinking" hidden>✍️ Guru soch rahe hain…</div>
+      </div>
+      <div id="caption" class="caption"></div>
+
+      <div class="controls">
+        <button id="prev" title="Pichhla paragraph">⏮</button>
+        <button id="play" class="primary">▶ Shuru karo</button>
+        <button id="next" title="Agla paragraph">⏭</button>
+        <button id="interrupt" class="warn">✋ Ruko, doubt hai</button>
+        <label class="speed">Raftaar
+          <select id="pace">
+            <option value="0.8">dheere</option>
+            <option value="0.95" selected>normal</option>
+            <option value="1.15">tez</option>
+          </select>
+        </label>
+        <span id="para-count" class="muted"></span>
+      </div>
+
+      <div id="doubt" class="doubt" hidden>
+        <div class="doubt-title">Poochho guru, ka nahi samjhe?</div>
+        <div class="doubt-row">
+          <input id="question" placeholder="jaise: 'embedding ka matlab?' (ya 🎤 dabake bolo)" />
+          <button id="mic" title="Dabake rakho aur bolo">🎤</button>
+          <button id="ask" class="primary">Poochho</button>
+        </div>
+        <div id="go-row" class="doubt-row" hidden>
+          <button id="go" class="primary">▶ Aage badho</button>
+          <span class="muted">ya 🎤 pe bolo "aage badho" — ya ek aur sawaal poochho</span>
+        </div>
+        <button id="cancel-doubt" class="link">chhodo, aage chalo</button>
+      </div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
