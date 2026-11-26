@@ -28,14 +28,14 @@ import shlex
 
 W, H = 800, 500
 COLORS = {
-    "black": "#1f2937", "kaala": "#1f2937", "blue": "#2563eb", "neela": "#2563eb",
-    "red": "#dc2626", "laal": "#dc2626", "green": "#059669", "hara": "#059669",
-    "orange": "#d97706", "purple": "#7c3aed", "gray": "#6b7280", "grey": "#6b7280",
+    "black": "#1C2541", "kaala": "#1C2541", "blue": "#1C2541", "neela": "#1C2541",
+    "red": "#B7873C", "laal": "#B7873C", "green": "#1C2541", "hara": "#1C2541",
+    "orange": "#B7873C", "purple": "#1C2541", "gray": "#777C8D", "grey": "#777C8D",
 }
 
 
 def _c(name: str) -> str:
-    return COLORS.get((name or "").lower(), "#1f2937")
+    return COLORS.get((name or "").lower(), "#1C2541")
 
 
 def _isnum(t: str) -> bool:
@@ -310,7 +310,7 @@ class Board:
         return f'<path d="{d}" stroke="{col}" stroke-width="3" fill="none"/>'
 
     def axes(self, x, y, w, h, xl, yl):
-        col, oy = "#1f2937", y + h
+        col, oy = "#1C2541", y + h
         out = (f'<path d="M{x} {oy} L{x + w} {oy}" stroke="{col}" stroke-width="3" fill="none"/>'
                + _arrowhead(x, oy, x + w, oy, col)
                + f'<path d="M{x} {oy} L{x} {y}" stroke="{col}" stroke-width="3" fill="none"/>'
@@ -335,7 +335,7 @@ class Board:
         nums = []
         while a and _isnum(a[0]):
             nums.append(_n(a.pop(0)))
-        col = "#1f2937"
+        col = "#1C2541"
         if a and a[0].lower() in COLORS:
             col = _c(a.pop(0))
         return {"cmd": cmd, "tok": tok, "nums": nums, "col": col, "label": " ".join(a).strip()}
@@ -359,13 +359,13 @@ class Board:
             if cmd in ("arrow", "line") and len(n) >= 4:
                 return self.arrow(*n[:4], col, label, head=(cmd == "arrow"))
             if cmd == "underline" and len(n) >= 3:
-                return self.underline(*n[:3], col if col != "#1f2937" else "#dc2626")
+                return self.underline(*n[:3], col if col != "#1C2541" else "#B7873C")
             if cmd == "axes" and len(n) >= 4:
                 parts = tok[5:]
                 return self.axes(*n[:4], parts[0] if parts else "", parts[1] if len(parts) > 1 else "")
             if cmd == "curve":
                 toks = tok[1:]
-                ccol = next((_c(t) for t in toks if t.lower() in COLORS), "#1f2937")
+                ccol = next((_c(t) for t in toks if t.lower() in COLORS), "#1C2541")
                 vals = [_n(v) for t in toks for v in t.split(",") if _isnum(v)]
                 return self.curve(ccol, list(zip(vals[0::2], vals[1::2])))
         except (ValueError, IndexError, TypeError, ZeroDivisionError):

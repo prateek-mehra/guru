@@ -25,7 +25,10 @@ from draw import COLORS, W, H, Board, _arrowhead, _c, _t, fit_text, text_w
 SEMANTIC = ("title", "node", "link", "note", "formula", "graph", "plot", "saar", "summary")
 RAW = ("box", "rect", "circle", "text", "arrow", "line", "curve", "axes", "underline")
 
-BLACK = "#1f2937"
+# Two-colour theme: deep indigo ink + marigold (a deeper marigold for lines/text on the board).
+BLACK = INK = "#1C2541"
+GOLD = "#B7873C"
+GOLD_BRIGHT = "#E3A33B"
 LINE_H = 1.2
 
 SHAPES = {
@@ -129,14 +132,14 @@ class Scene:
                 out[i] = text_block(lines[:1], 24, 16, sz, d["col"] or BLACK)
                 tw = min(W - 40, text_w(lines[0], sz))
                 out[i] += (f'<path d="M24 {16 + sz * 1.25:.1f} Q{24 + tw / 2:.1f} {20 + sz * 1.25:.1f} '
-                           f'{24 + tw:.1f} {14 + sz * 1.25:.1f}" stroke="#dc2626" stroke-width="3" fill="none"/>')
+                           f'{24 + tw:.1f} {14 + sz * 1.25:.1f}" stroke="{GOLD_BRIGHT}" stroke-width="4" fill="none"/>')
                 self.board.texts.append((20, 10, 28 + tw, 24 + sz * 1.3))
             elif k == "saar" and not any(kk == "saar" for _, kk, _ in self.items[:i]):
                 txt = " ".join(d["words"])
                 sz, lines, _ = fit_text(txt, W - 60, 24, min_size=17, max_lines=2)
                 h = len(lines) * sz * LINE_H + 14
                 y = H - 8 - h
-                col = d["col"] or "#dc2626"
+                col = d["col"] or "#B7873C"
                 out[i] = (f'<rect x="16" y="{y:.1f}" width="{W - 32}" height="{h:.1f}" rx="12" stroke="{col}" '
                           f'stroke-width="2.5" fill="{col}" fill-opacity="0.06"/>'
                           + text_block(lines, W / 2, y + 7, sz, col, "middle"))
@@ -224,7 +227,7 @@ class Scene:
                 th = len(lines) * sz * LINE_H
                 cx = rx + cw * (c + 0.5)
                 cy = ry + ch * r + slot_h * (j + 0.5)
-                col = nd["col"] or ["#2563eb", "#059669", "#7c3aed", "#d97706", "#dc2626"][len(self.pos) % 5]
+                col = nd["col"] or [INK, GOLD][len(self.pos) % 2]
                 if nd["circle"]:
                     rad = math.hypot(tw, th) / 2 + 8
                     b = (cx - rad, cy - rad, cx + rad, cy + rad)
@@ -331,7 +334,7 @@ class Scene:
             if y + h > bottom + 4:
                 break  # out of room: drop the rest rather than overlap
             if k == "formula":
-                col = d["col"] or "#7c3aed"
+                col = d["col"] or "#1C2541"
                 out[i] = (f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="10" stroke="{col}" '
                           f'stroke-width="3" fill="{col}" fill-opacity="0.08"/>'
                           + text_block(lines, x + w / 2, y + 9, sz, col, "middle"))
@@ -372,7 +375,7 @@ class Scene:
                     f'{_t(yl)}</text>')
         self.board.shapes.append(((x, y, x + w, y + h), "box", None))
         if self.graph_shape:  # GRAPH itself named a shape: draw that line now
-            svg += self._plot_line(self.graph_shape, "#2563eb", "", "mid")
+            svg += self._plot_line(self.graph_shape, "#1C2541", "", "mid")
         return svg
 
     def _plot_line(self, fn, col, legend, level):
@@ -407,7 +410,7 @@ class Scene:
                 fn = next((shape_fn(w) for w in d["words"] if shape_fn(w)), SHAPES["fall"])
                 legend = " ".join(w for w in d["words"] if not shape_fn(w))
                 level = next((f for f in d["flags"] if f in ("high", "low", "mid")), "mid")
-                col = d["col"] or ["#dc2626", "#2563eb", "#059669", "#d97706"][self.plot_count % 4]
+                col = d["col"] or [GOLD, INK][self.plot_count % 2]
                 svgs[s] += self._plot_line(fn, col, legend, level)
         # legacy coordinate commands, laid out around everything above
         for _, c in self.raw:

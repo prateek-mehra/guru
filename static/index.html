@@ -12,8 +12,10 @@
 </head>
 <body>
   <header>
-    <div class="brand">Guru <span>· paper samjho, Kanpur style</span></div>
-    <label class="upload">📄 PDF upload karo
+    <div class="brand"><span class="mark">G</span>Guru <span class="tag">paper samjho, Kanpur style</span></div>
+    <label class="upload">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+      PDF upload karo
       <input id="file" type="file" accept="application/pdf" hidden />
     </label>
   </header>
@@ -22,6 +24,7 @@
     <section id="paper-pane">
       <div id="drop" class="drop">
         <div>
+          <div class="drop-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6m0 0-3 3m3-3 3 3"/></svg></div>
           <h2>Research paper ka PDF yahan daalo</h2>
           <p>Guru har paragraph dheere dheere Kanpuriya mein samjhayenge, whiteboard pe drawing ke saath.<br />
           Beech mein kuch na samjhe to <kbd>M</kbd> dabao aur bol ke sawaal poochho — bolne ke baad phir se <kbd>M</kbd>.</p>
@@ -43,14 +46,14 @@
           </defs>
           <g id="ink"></g>
         </svg>
-        <div id="thinking" class="thinking" hidden>✍️ Guru soch rahe hain…</div>
+        <div id="thinking" class="thinking" hidden><span>Guru soch rahe hain</span><i></i><i></i><i></i></div>
       </div>
       <div id="caption" class="caption"></div>
 
       <div class="controls">
-        <button id="prev" title="Pichhla paragraph">⏮</button>
-        <button id="play" class="primary">▶ Shuru karo</button>
-        <button id="next" title="Agla paragraph">⏭</button>
+        <button id="prev" class="icon" title="Pichhla paragraph" aria-label="Pichhla paragraph"><svg viewBox="0 0 24 24"><path d="M18 6 9 12l9 6zM6 6v12"/></svg></button>
+        <button id="play" class="primary"></button>
+        <button id="next" class="icon" title="Agla paragraph" aria-label="Agla paragraph"><svg viewBox="0 0 24 24"><path d="m6 6 9 6-9 6zM18 6v12"/></svg></button>
         <div id="speeds" class="speeds" role="group" aria-label="Speed">
           <button data-rate="1" class="on">1x</button>
           <button data-rate="1.25">1.25x</button>
@@ -63,13 +66,13 @@
       <div id="doubt" class="doubt" hidden>
         <div class="doubt-title">Poochho guru, ka nahi samjhe?</div>
         <div class="doubt-row">
-          <input id="question" placeholder="jaise: 'embedding ka matlab?' (ya 🎤 dabake bolo)" />
-          <button id="mic" title="Bolne ke liye dabao (ya M), phir se dabao bhejne ke liye">🎤</button>
+          <input id="question" placeholder="jaise: 'embedding ka matlab?' — ya M dabake bolo" />
+          <button id="mic" class="icon" title="Bolne ke liye dabao (ya M), phir se dabao bhejne ke liye" aria-label="Bolo"></button>
           <button id="ask" class="primary">Poochho</button>
         </div>
         <div id="go-row" class="doubt-row" hidden>
-          <button id="go" class="primary">▶ Aage badho</button>
-          <span class="muted">ya 🎤 pe bolo "aage badho" — ya ek aur sawaal poochho</span>
+          <button id="go" class="gold">Aage badho</button>
+          <span class="muted">ya M dabake bolo "aage badho" — ya ek aur sawaal poochho</span>
         </div>
         <button id="cancel-doubt" class="link">chhodo, aage chalo</button>
       </div>

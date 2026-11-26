@@ -22,16 +22,23 @@ let resumeWaiters = [];
 // ---------------------------------------------------------------- utils
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function setStatus(text, cls = "") { const s = $("status"); s.textContent = text; s.className = "status " + cls; }
+// Line icons (inherit the button's text colour, so the two-colour theme holds).
+const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+const ICON = {
+  play: svg("M7 5v14l12-7z"), pause: svg("M8 5v14M16 5v14"),
+  mic: svg("M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"),
+  stop: svg("M7 7h10v10H7z"),
+};
 // Guru is "active" whenever he is talking or about to talk.
 const isActive = () => S.mode === "loading" || S.mode === "playing" || S.answering;
 function setMode(m) {
   S.mode = m;
   const active = isActive();
-  $("play").textContent = S.paused ? "▶ Chalo" : active ? "⏸ Ruko" : "▶ Shuru karo";
+  $("play").innerHTML = S.paused ? ICON.play + "<span>Chalo</span>" : active ? ICON.pause + "<span>Ruko</span>" : ICON.play + "<span>Shuru karo</span>";
   $("play").disabled = !S.paras.length || (!active && !S.paused && (m === "doubt" || m === "await_go"));
   $("prev").disabled = $("next").disabled = !S.paras.length || m === "doubt" || m === "await_go";
   $("para-count").textContent = S.paras.length ? `para ${S.cur + 1} / ${S.paras.length}` : "";
-  if (S.paused) return setStatus("ruke hue — ▶ ya P dabao", "busy");
+  if (S.paused) return setStatus("ruke hue — P dabao", "busy");
   setStatus({ idle: "tayyar", loading: "soch rahe hain…", playing: "samjha rahe hain",
     doubt: S.answering ? "doubt samjha rahe hain" : "doubt mode", await_go: "aapke 'aage badho' ka intezaar" }[m],
     m === "doubt" || m === "await_go" ? "doubt" : m === "loading" ? "busy" : "");
@@ -177,7 +184,7 @@ async function loadPdf(file) {
   S.cur = 0;
   S.paras.forEach((p, i) => addHitArea(p, i));
   clearBoard();
-  $("caption").textContent = `"${S.title}" — ${S.paras.length} paragraphs mile. ▶ dabao, shuru karte hain! (kisi paragraph pe click karke wahin se bhi shuru kar sakte ho)`;
+  $("caption").textContent = `"${S.title}" — ${S.paras.length} paragraphs mile. "Shuru karo" dabao! (kisi paragraph pe click karke wahin se bhi shuru kar sakte ho)`;
   setMode("idle");
   explain(0).catch(() => {}); // warm up
 }
@@ -227,7 +234,7 @@ function animate(g) {
   let delay = 0;
   g.querySelectorAll("path,line,rect,circle,ellipse,polyline,polygon").forEach((el) => {
     if (!el.getAttribute("stroke") && (!el.getAttribute("fill") || el.getAttribute("fill") === "none")) {
-      el.setAttribute("stroke", "#1f2937"); el.setAttribute("fill", "none");
+      el.setAttribute("stroke", "#1C2541"); el.setAttribute("fill", "none");
     }
     if (!el.getAttribute("stroke-width")) el.setAttribute("stroke-width", "3");
     el.setAttribute("stroke-linecap", "round"); el.setAttribute("stroke-linejoin", "round");
@@ -241,7 +248,7 @@ function animate(g) {
     }
   });
   g.querySelectorAll("text").forEach((t) => {
-    if (!t.getAttribute("fill")) t.setAttribute("fill", "#1f2937");
+    if (!t.getAttribute("fill")) t.setAttribute("fill", "#1C2541");
     t.removeAttribute("font-family"); t.removeAttribute("stroke");
     t.style.opacity = 0; t.style.transition = `opacity .5s ease ${delay}s`;
     requestAnimationFrame(() => requestAnimationFrame(() => (t.style.opacity = 1)));
@@ -365,7 +372,7 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   catch (e) {
     if (id !== S.playId) return;
     $("thinking").hidden = true; setMode("idle");
-    $("caption").textContent = "⚠️ Gadbad ho gayi: " + e.message + " — ▶ dabake phir try karo.";
+    $("caption").textContent = "Gadbad ho gayi: " + e.message + " — phir try karo.";
     return;
   }
   if (id !== S.playId) return;
@@ -376,7 +383,7 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   const finished = await playSteps(steps, stepFrom, id, true, !keepBoard);
   if (!finished) return;
   if (i + 1 < S.paras.length) { await sleep(900 / speed); if (id === S.playId) runFrom(i + 1); }
-  else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई। 🎉"; speak($("caption").textContent, id); }
+  else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई।"; speak($("caption").textContent, id); }
 }
 function startPara(i) { hush(); S.history = []; runFrom(Math.max(0, Math.min(S.paras.length - 1, i))); }
 function stopAll() { S.playId++; hush(); }
@@ -412,7 +419,7 @@ async function ask(q) {
   } catch (e) {
     if (id !== S.playId) return;
     $("thinking").hidden = true;
-    $("caption").textContent = "⚠️ " + e.message; awaitGo();
+    $("caption").textContent = e.message; awaitGo();
   } finally { $("ask").disabled = false; if (id === S.playId) S.answering = false; }
 }
 function awaitGo() { setMode("await_go"); $("go-row").hidden = false; $("question").placeholder = "ek aur sawaal? (ya 'aage badho')"; }
@@ -446,7 +453,7 @@ async function toggleMic() {
     chunks = []; rec = new MediaRecorder(stream);
     rec.ondataavailable = (e) => chunks.push(e.data);
     rec.onstop = async () => {
-      stream.getTracks().forEach((t) => t.stop()); $("mic").classList.remove("rec"); $("mic").textContent = "🎤";
+      stream.getTracks().forEach((t) => t.stop()); $("mic").classList.remove("rec"); $("mic").innerHTML = ICON.mic;
       const fd = new FormData(); fd.append("file", new Blob(chunks, { type: rec.mimeType || "audio/webm" }), "speech.webm");
       setStatus("sun rahe hain…", "busy");
       try {
@@ -462,9 +469,9 @@ async function toggleMic() {
         ask(transcript);
       } catch (e) { setStatus("mic error: " + e.message, "doubt"); }
     };
-    rec.start(); $("mic").classList.add("rec"); $("mic").textContent = "⏹";
-    setStatus("🎙 bolo… phir M dabao", "doubt");
-    $("caption").textContent = "🎙 सुन रहे हैं गुरु, बोलो… (बोल के फिर से M दबाओ)";
+    rec.start(); $("mic").classList.add("rec"); $("mic").innerHTML = ICON.stop;
+    setStatus("sun rahe hain — bolo, phir M", "doubt");
+    $("caption").textContent = "सुन रहे हैं गुरु, बोलो… (बोल के फिर से M दबाओ)";
     setTimeout(() => rec && rec.state === "recording" && rec.stop(), 25000);
   } catch (e) { alert("Mic ki permission chahiye: " + e.message); }
 }
@@ -484,6 +491,7 @@ function togglePause() {
 $("play").onclick = togglePause;
 document.querySelectorAll("#speeds button").forEach((b) => (b.onclick = () => setSpeed(parseFloat(b.dataset.rate))));
 setSpeed(speed);
+$("mic").innerHTML = ICON.mic;
 $("prev").onclick = () => startPara(S.cur - 1);
 $("next").onclick = () => startPara(S.cur + 1);
 $("ask").onclick = () => {
