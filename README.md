@@ -15,7 +15,7 @@ Upload a research-paper PDF. A teacher, "Guru", explains it **one paragraph at a
 | Voice | `bulbul:v3` text-to-speech, `hi-IN`, speaker `shubh` (set `TTS_SPEAKER` to change it) |
 | Listening to your questions | `saaras:v4` speech-to-text, `codemix` mode (handles Hindi and English mixed together) |
 
-The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. [`draw.py`](draw.py) turns the `DRAW:` lines into SVG, which is more reliable than asking the model for raw SVG.
+The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. It never gives coordinates: [`layout.py`](layout.py) decides where everything goes and turns it into SVG.
 
 ## Run
 
@@ -29,5 +29,6 @@ Needs Python 3.9 or newer. Use Chrome, because the 🎤 button needs microphone 
 ## Files
 
 - `server.py`: FastAPI app. It serves `/api/explain`, `/api/ask`, `/api/tts` and `/api/stt`, plus the prompts.
-- `draw.py`: the whiteboard command language, its SVG renderer, and a small layout engine (fits labels in shapes, keeps things from overlapping, keeps arrows attached).
+- `layout.py`: the whiteboard language. The model says *what* to draw (`TITLE`, `NODE`/`LINK` flowchart, `FORMULA`, `NOTE`, `GRAPH`/`PLOT`, `SAAR`) and this lays it out in fixed zones, so nothing overlaps.
+- `draw.py`: text measuring and the older coordinate commands, still accepted as a fallback.
 - `static/`: the UI (`index.html`, `app.js`, `style.css`).

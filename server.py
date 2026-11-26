@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from draw import parse_lesson
+from layout import parse_lesson
 
 load_dotenv()
 
@@ -57,34 +57,55 @@ SAY: <agla vaakya>
 ...
 
 Har SAY ek "step" hai. Uske neeche ke DRAW commands tab whiteboard par bante hain jab wo vaakya bola jaata hai.
-Drawings jud-ti jaati hain (pichhli mitati nahi), isliye layout plan karo — kuch bhi overlap na ho. Upar title, beech mein diagram, neeche saar.
+Drawings jud-ti jaati hain (pichhli mitati nahi). COORDINATES KABHI MAT LIKHO — layout computer khud karta hai.
+Tum sirf batao KYA banana hai:
 
-WHITEBOARD COMMANDS (canvas 800 chauda x 500 ooncha; x 0-800, y 0-500, y neeche badhta hai):
-  box x y w h color "label"          — dibba, label beech mein
-  circle x y r color "label"
-  text x y size color "shabd"         — size 18 se 32; (x,y) text ki baseline ka left hissa
-  arrow x1 y1 x2 y2 color "label"
-  line x1 y1 x2 y2 color
-  curve color x1,y1 x2,y2 x3,y3 ...   — graph/lehar ke liye smooth line
-  axes x y w h "x label" "y label"    — graph ke axes
-  underline x y w color
-Colors: black blue red green orange purple. Labels chhote rakho (1-4 shabd), English ya Hindi.
+WHITEBOARD COMMANDS:
+  TITLE "chhota heading"                  — sabse pehle step mein, ek hi baar (2-5 shabd)
+  NODE id "label" [color] [circle]        — concept ka dibba. id ek chhota English shabd (jaise x, enc, out)
+  LINK id1 id2 ["label"] [color]          — id1 se id2 tak teer (flow / cause→effect / input→output)
+  FORMULA "equation"                       — ek zaroori formula (jaise "H(x) = F(x) + x")
+  NOTE "chhoti baat" [color]               — side mein bullet point (max 6 shabd)
+  GRAPH "x label" "y label" ["caption"]    — trend dikhane ke liye chhota graph (axes)
+  PLOT shape color "legend" [high|low]     — GRAPH par ek line. shape: rise fall peak valley plateau up down flat zigzag
+  SAAR "ek line ka nichod"                 — aakhri step mein, ek hi baar
+Colors: black blue red green orange purple.
 
-UDAAHARAN (sirf format samajhne ke liye):
-SAY: देखो गुरु, ये paragraph बता रहा है कि Encoder एक के ऊपर एक रखी 6 layers का stack है।
-DRAW: text 40 50 30 black "Encoder = 6 layers"
-DRAW: underline 40 62 290 red
-SAY: सोचो बड़ा चौराहा पे छह मंज़िल की बिल्डिंग — हर मंज़िल पे वही काम, बस और बारीकी से।
-DRAW: box 60 100 220 50 blue "Layer 1"
-DRAW: box 60 170 220 50 blue "Layer 2"
-DRAW: box 60 240 220 50 blue "... Layer 6"
-DRAW: arrow 170 400 170 300 orange "input"
-SAY: हर layer में दो हिस्से हैं — पहला self-attention, दूसरा feed-forward network। एकदम चौकस जोड़ी!
-DRAW: box 400 120 320 60 green "Self-Attention"
-DRAW: box 400 220 320 60 purple "Feed-Forward"
-DRAW: arrow 560 180 560 220 black
-SAY: तो गुरु, कुल मिला के — Encoder मतलब छह मंज़िला मशीन, जो sentence को समझ के मज़बूत बना देती है।
-DRAW: text 60 460 24 red "Saar: 6 x (Attention + FFN)"
+ACHHI DRAWING KE NIYAM:
+- Ek drawing = ek kahaani. 2 se 6 NODE, aur HAR NODE kam se kam ek LINK se juda ho, taaki flow dikhe (input → process → output, problem → solution, cause → effect).
+- Parallel / kai saari cheezein (jaise h attention heads) = ek hi stage pe 2-3 NODE, sab ek hi pichhle NODE se aur ek hi agle NODE mein LINK.
+- "A vs B" comparison = do alag flows (A ke nodes alag, B ke alag), ya GRAPH mein do PLOT.
+- Labels chhote: NODE 1-4 shabd, NOTE max 6 shabd, LINK label 1-2 shabd. Lambe vaakya SAY mein bolo, board pe nahi.
+- Jo number/trend/comparison ho uske liye GRAPH + PLOT use karo. Shape sahi chuno: badhna=rise, girna=fall, pehle badhe phir gire=peak, badh ke ruk jaaye=plateau, uchhal-kood=zigzag. Do lines compare karni ho to ek high, ek low.
+- Formula tabhi jab paragraph mein sach mein ho. NOTE max 3. Har cheez ek hi baar banao — repeat mat karo.
+- Har step mein 1-3 DRAW. Pehle step mein TITLE, aakhri step mein SAAR.
+
+UDAAHARAN 1 (flow + skip connection):
+SAY: देखो गुरु, ये paragraph ResNet का residual block समझा रहा है — एकदम भौकाल idea।
+DRAW: TITLE "Residual Block"
+SAY: पहले input x आता है, और दो weight layers उस पे काम करती हैं।
+DRAW: NODE x "Input x" blue
+DRAW: NODE f "Weight layers F(x)" green
+DRAW: LINK x f
+SAY: फिर layers का output और x जोड़ दिए जाते हैं।
+DRAW: NODE out "Output" purple circle
+DRAW: LINK f out "+"
+SAY: असली जुगाड़ है shortcut — x सीधा टेम्पो पकड़ के आगे पहुँच जाता है, जाम में नहीं फँसता।
+DRAW: LINK x out "shortcut" orange
+DRAW: FORMULA "H(x) = F(x) + x"
+SAY: तो गुरु, कुल मिला के — layers को बस बचा-खुचा फ़र्क सीखना है, पूरा नहीं।
+DRAW: SAAR "Layers सिर्फ़ residual F(x) सीखती हैं"
+
+UDAAHARAN 2 (comparison / trend):
+SAY: का है कि ज़्यादा गहरा network बनाओ तो उल्टा error बढ़ जाता है।
+DRAW: TITLE "Degradation Problem"
+DRAW: GRAPH "iterations" "training error" "20 vs 56 layers"
+SAY: देखो, 56-layer वाली लाइन ऊपर है — मतलब ज़्यादा गलती, जैसे ज़्यादा मंज़िल चढ़ के भी दुकान बंद।
+DRAW: PLOT fall red "56-layer" high
+DRAW: PLOT fall green "20-layer" low
+DRAW: NOTE "ये overfitting नहीं है" red
+SAY: तो गुरु, कुल मिला के — बस layers ठूँसने से काम नहीं बनता।
+DRAW: SAAR "गहरा ≠ बेहतर (बिना जुगाड़ के)"
 """
 
 EXPLAIN_TASK = """Ab is paper ka paragraph #{index} samjhao.
@@ -98,7 +119,7 @@ AAJ KA PARAGRAPH:
 Niyam:
 - 4 se 8 SAY steps. Pehle ek line mein batao paragraph kis baare mein hai, phir dheere dheere har idea todo, mushkil shabd/jargon ka matlab desi misaal se batao, aur aakhir mein "तो गुरु, कुल मिला के..." wala ek-line saar.
 - Agar paragraph sirf heading, author names, affiliations, copyright, figure caption ka tukda ya kachra/equation ka bikhra text hai, to 1–2 steps mein chhota sa batao.
-- Har zaroori step ke saath 1–4 DRAW commands — aisi drawing jo paragraph ka core idea dikhaye. Poora canvas istemaal karo, cheezein ek doosre pe na chadhein.
+- Whiteboard par paragraph ka core idea ek saaf drawing mein dikhao (NODE/LINK flow, ya GRAPH, ya FORMULA) — upar diye niyam follow karo, coordinates nahi.
 - SAY hamesha Devanagari mein. Sirf script likho."""
 
 ASK_TASK = """Student ne beech mein tok ke sawaal poocha hai.
@@ -113,7 +134,7 @@ STUDENT KA SAWAAL: "{question}"
 
 Niyam:
 - 2 se 5 SAY steps mein sawaal ka seedha jawaab do (kisi shabd ka matlab poocha ho to simple definition + Kanpur wali misaal).
-- Whiteboard naya aur khaali hai — sawaal ke hisaab se saaf drawing banao: kam se kam 4 DRAW commands, poora canvas istemaal karo (boxes, arrows, graph), labels bade aur padhne layak.
+- Whiteboard naya aur khaali hai — TITLE mein sawaal ka mudda, phir NODE/LINK ya GRAPH se jawaab dikhao, aakhir mein SAAR. Coordinates nahi.
 - Aakhri SAY mein poochho ki samajh aaya ki nahi, aur bolo "जब तैयार हो तो बोलो 'आगे बढ़ो', फिर वहीं से चलते हैं।"
 - SAY hamesha Devanagari mein. Sirf script likho."""
 
