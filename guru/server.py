@@ -1,11 +1,12 @@
 """Guru — research-paper explainer in Kanpuriya Hindi, powered by Sarvam AI
 (sarvam-105b for explanations, Bulbul v3 for voice, Saaras v4 for listening).
 
-Run:  .venv/bin/uvicorn server:app --port 8765
+Run:  ./run.sh   (or: .venv/bin/python -m uvicorn guru.server:app --port 8765 from the repo root)
 """
 
 import os
 import re
+from pathlib import Path
 from typing import List, Optional
 
 import httpx
@@ -15,9 +16,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from layout import parse_lesson
+from .whiteboard.layout import parse_lesson
 
-load_dotenv()
+HERE = Path(__file__).resolve().parent
+STATIC_DIR = HERE / "static"
+load_dotenv(HERE.parent / ".env")  # .env lives at the repo root
 
 SARVAM = "https://api.sarvam.ai"
 SARVAM_KEY = os.getenv("SARVAM_API_KEY", "")
@@ -319,9 +322,9 @@ def health():
     return {"ok": True, "mock": MOCK, "model": CHAT_MODEL, "voice": TTS_SPEAKER, "tts_model": TTS_MODEL}
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/")
 def index():
-    return FileResponse("static/index.html")
+    return FileResponse(STATIC_DIR / "index.html")
