@@ -22,7 +22,7 @@ load_dotenv()
 SARVAM = "https://api.sarvam.ai"
 SARVAM_KEY = os.getenv("SARVAM_API_KEY", "")
 CHAT_MODEL = "sarvam-105b"
-TTS_SPEAKER = os.getenv("TTS_SPEAKER", "shubh")
+TTS_SPEAKER = os.getenv("TTS_SPEAKER", "varun")
 PAPER_CHARS = 120_000  # sarvam-105b has a 128K-token context window
 MOCK = os.getenv("MOCK", "0") == "1"
 http = httpx.Client(timeout=120)
