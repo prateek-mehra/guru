@@ -51,14 +51,12 @@
         <button id="prev" title="Pichhla paragraph">⏮</button>
         <button id="play" class="primary">▶ Shuru karo</button>
         <button id="next" title="Agla paragraph">⏭</button>
-        <span class="muted"><kbd>M</kbd> = bol ke poochho · <kbd>P</kbd> = ruko/chalo</span>
-        <label class="speed">Raftaar
-          <select id="pace">
-            <option value="0.8">dheere</option>
-            <option value="0.95" selected>normal</option>
-            <option value="1.15">tez</option>
-          </select>
-        </label>
+        <div id="speeds" class="speeds" role="group" aria-label="Speed">
+          <button data-rate="1" class="on">1x</button>
+          <button data-rate="1.25">1.25x</button>
+          <button data-rate="1.5">1.5x</button>
+          <button data-rate="2">2x</button>
+        </div>
         <span id="para-count" class="muted"></span>
       </div>
 

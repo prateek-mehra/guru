@@ -258,7 +258,18 @@ function fitBoard() { // keep everything visible even if the model drew outside 
 }
 
 // ---------------------------------------------------------------- voice out (Sarvam Bulbul, browser fallback)
-function pace() { return parseFloat($("pace").value); }
+// Guru's voice is generated once at a natural pace; speed buttons only change playback rate,
+// so switching speed is instant and works mid-sentence (pitch is preserved by the browser).
+const VOICE_PACE = 0.95;
+function pace() { return VOICE_PACE; }
+let speed = 1;
+try { speed = parseFloat(localStorage.getItem("guru-speed")) || 1; } catch {}
+function setSpeed(r) {
+  speed = r;
+  audio.defaultPlaybackRate = r; audio.playbackRate = r;
+  document.querySelectorAll("#speeds button").forEach((b) => b.classList.toggle("on", parseFloat(b.dataset.rate) === r));
+  try { localStorage.setItem("guru-speed", String(r)); } catch {}
+}
 function ttsUrl(text) {
   const key = pace() + "|" + text;
   if (!ttsCache.has(key)) {
@@ -297,11 +308,11 @@ async function speak(text, id = S.playId) {
     stopSpeaking = () => { stopSpeaking = null; resolve("stopped"); };
     const done = () => { if (stopSpeaking) { stopSpeaking = null; resolve("done"); } };
     if (url) {
-      audio.src = url; audio.onended = done; audio.onerror = done;
+      audio.src = url; audio.defaultPlaybackRate = audio.playbackRate = speed; audio.onended = done; audio.onerror = done;
       audio.play().catch(done);
     } else if ("speechSynthesis" in window) {
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "hi-IN"; u.rate = pace();
+      u.lang = "hi-IN"; u.rate = pace() * speed;
       const v = speechSynthesis.getVoices().find((v) => v.lang === "hi-IN"); if (v) u.voice = v;
       u.onend = done; u.onerror = done; speechSynthesis.speak(u);
     } else setTimeout(done, 300 + text.length * 60);
@@ -338,7 +349,7 @@ async function playSteps(steps, from, id, track = true, redrawFirst = true) {
     if (k !== from || redrawFirst) draw(steps[k].svg); // on resume, that step's drawing is already on the board
     await speak(steps[k].say, id);
     if (id !== S.playId) return false;
-    await sleep(350);
+    await sleep(350 / speed); // pauses between sentences shrink with speed too
   }
   return id === S.playId;
 }
@@ -364,7 +375,7 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   setMode("playing");
   const finished = await playSteps(steps, stepFrom, id, true, !keepBoard);
   if (!finished) return;
-  if (i + 1 < S.paras.length) { await sleep(900); if (id === S.playId) runFrom(i + 1); }
+  if (i + 1 < S.paras.length) { await sleep(900 / speed); if (id === S.playId) runFrom(i + 1); }
   else { setMode("idle"); $("caption").textContent = "बस गुरु, पूरा पेपर निपट गया! एकदम भौकाल पढ़ाई हुई। 🎉"; speak($("caption").textContent, id); }
 }
 function startPara(i) { hush(); S.history = []; runFrom(Math.max(0, Math.min(S.paras.length - 1, i))); }
@@ -471,6 +482,8 @@ function togglePause() {
   else if (S.mode === "idle" && S.paras.length) runFrom(S.cur, 0);
 }
 $("play").onclick = togglePause;
+document.querySelectorAll("#speeds button").forEach((b) => (b.onclick = () => setSpeed(parseFloat(b.dataset.rate))));
+setSpeed(speed);
 $("prev").onclick = () => startPara(S.cur - 1);
 $("next").onclick = () => startPara(S.cur + 1);
 $("ask").onclick = () => {
