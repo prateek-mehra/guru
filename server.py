@@ -22,7 +22,9 @@ load_dotenv()
 SARVAM = "https://api.sarvam.ai"
 SARVAM_KEY = os.getenv("SARVAM_API_KEY", "")
 CHAT_MODEL = "sarvam-105b"
-TTS_SPEAKER = os.getenv("TTS_SPEAKER", "varun")
+TTS_SPEAKER = os.getenv("TTS_SPEAKER", "shubh_enhi_banking")
+# Bulbul v4 Flash personas look like name_lang_style (e.g. shubh_enhi_banking); plain names (shubh, varun) are v3.
+TTS_MODEL = "bulbul:v4-flash" if "_" in TTS_SPEAKER else "bulbul:v3"
 PAPER_CHARS = 120_000  # sarvam-105b has a 128K-token context window
 MOCK = os.getenv("MOCK", "0") == "1"
 http = httpx.Client(timeout=120)
@@ -272,11 +274,11 @@ class TTSReq(BaseModel):
 
 @app.post("/api/tts")
 def tts(req: TTSReq):
-    """Kanpuriya narration -> Bulbul v3 Hindi voice (base64 mp3)."""
+    """Kanpuriya narration -> Bulbul voice (base64 mp3)."""
     if MOCK:
         return {"audio": None}
     r = http.post(f"{SARVAM}/text-to-speech", headers=headers(), json={
-        "text": req.text[:2500], "language_code": "hi-IN", "model": "bulbul:v3",
+        "text": req.text[:2500], "language_code": "hi-IN", "model": TTS_MODEL,
         "speaker": TTS_SPEAKER, "pace": max(0.5, min(2.0, req.pace)), "output_audio_codec": "mp3",
     })
     _raise_for(r)
@@ -314,7 +316,7 @@ def render(req: RenderReq):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "mock": MOCK, "model": CHAT_MODEL, "voice": TTS_SPEAKER}
+    return {"ok": True, "mock": MOCK, "model": CHAT_MODEL, "voice": TTS_SPEAKER, "tts_model": TTS_MODEL}
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

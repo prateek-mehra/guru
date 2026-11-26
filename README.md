@@ -40,7 +40,7 @@ Dark boxes are things you do; marigold boxes are Sarvam AI models. While you lis
 | Job | Sarvam model |
 |---|---|
 | Explanations and doubt answers | `sarvam-105b` (chat completions, reasoning off for ~1–2 s replies) |
-| Voice | `bulbul:v3` text-to-speech, `hi-IN`, speaker `varun`, a deep, dramatic male voice (set `TTS_SPEAKER` to change it) |
+| Voice | `bulbul:v4-flash` text-to-speech, `hi-IN`, speaker `shubh_enhi_banking` (a Hindi–English code-mixed voice; set `TTS_SPEAKER` to change it, plain v3 names like `varun` also work) |
 | Listening to your questions | `saaras:v4` speech-to-text, `codemix` mode (handles Hindi and English mixed together) |
 
 The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. It never gives coordinates: [`layout.py`](layout.py) decides where everything goes and turns it into SVG.
