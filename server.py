@@ -1,4 +1,4 @@
-"""Carpathy — research-paper explainer in Kanpuriya Hindi, powered by Sarvam AI
+"""Guru — research-paper explainer in Kanpuriya Hindi, powered by Sarvam AI
 (sarvam-105b for explanations, Bulbul v3 for voice, Saaras v4 for listening).
 
 Run:  .venv/bin/uvicorn server:app --port 8765
@@ -27,7 +27,7 @@ PAPER_CHARS = 120_000  # sarvam-105b has a 128K-token context window
 MOCK = os.getenv("MOCK", "0") == "1"
 http = httpx.Client(timeout=120)
 
-app = FastAPI(title="Carpathy")
+app = FastAPI(title="Guru")
 
 
 @app.middleware("http")
@@ -41,7 +41,7 @@ async def no_cache(request, call_next):
 # Prompts
 # ---------------------------------------------------------------------------
 
-STYLE = """Tum "Carpathy Guru" ho — Kanpur ke ek mast, pyaare teacher jo research papers ekdum aasaan bhasha mein samjhaate hain.
+STYLE = """Tum "Guru" ho — Kanpur ke ek mast, pyaare teacher jo research papers ekdum aasaan bhasha mein samjhaate hain.
 
 BOLI (Kanpuriya Hindi):
 - Kanpur wali boli: "देखो गुरु", "का है कि...", "एकदम चौकस", "भौकाल", "गज़ब", "तनिक", "काहे", "हियाँ/हुआँ", "समझे कि नहीं?", "झाड़ दिया", "लल्लनटॉप", "धांसू", "हम बताते हैं".
@@ -268,11 +268,27 @@ async def stt(file: UploadFile = File(...), language: str = Form("hi-IN")):
     if MOCK:
         return {"transcript": "attention ka matlab kya hai"}
     data = await file.read()
-    r = http.post(f"{SARVAM}/speech-to-text", headers=headers(),
-                  data={"model": "saaras:v4", "mode": "codemix", "language_code": language},
-                  files={"file": (file.filename or "speech.webm", data, file.content_type or "audio/webm")})
+    # Browsers label recordings like "audio/webm;codecs=opus", which Sarvam rejects:
+    # send the bare type, then fall back to a generic binary type.
+    ctype = (file.content_type or "audio/webm").split(";")[0].strip()
+    for t in (ctype, "application/octet-stream"):
+        r = http.post(f"{SARVAM}/speech-to-text", headers=headers(),
+                      data={"model": "saaras:v4", "mode": "codemix", "language_code": language},
+                      files={"file": (file.filename or "speech.webm", data, t)})
+        if r.status_code != 400:
+            break
     _raise_for(r)
     return {"transcript": r.json().get("transcript", "")}
+
+
+class RenderReq(BaseModel):
+    script: str
+
+
+@app.post("/api/render")
+def render(req: RenderReq):
+    """Render a SAY/DRAW script without calling the model (for testing the whiteboard)."""
+    return {"steps": parse_lesson(req.script)}
 
 
 @app.get("/api/health")

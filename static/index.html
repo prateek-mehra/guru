@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carpathy — Paper samjho, Kanpur style</title>
+  <title>Guru — Paper samjho, Kanpur style</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
@@ -12,7 +12,7 @@
 </head>
 <body>
   <header>
-    <div class="brand">Carpathy <span>· paper samjho, Kanpur style</span></div>
+    <div class="brand">Guru <span>· paper samjho, Kanpur style</span></div>
     <label class="upload">📄 PDF upload karo
       <input id="file" type="file" accept="application/pdf" hidden />
     </label>
@@ -24,7 +24,7 @@
         <div>
           <h2>Research paper ka PDF yahan daalo</h2>
           <p>Guru har paragraph dheere dheere Kanpuriya mein samjhayenge, whiteboard pe drawing ke saath.<br />
-          Beech mein kuch na samjhe to <b>✋ Ruko</b> dabao (ya <kbd>Space</kbd>) aur sawaal poochho.</p>
+          Beech mein kuch na samjhe to <kbd>M</kbd> dabao aur bol ke sawaal poochho — bolne ke baad phir se <kbd>M</kbd>.<br />Ya <b>✋ Ruko</b> / <kbd>Space</kbd> dabao aur type karo.</p>
         </div>
       </div>
       <div id="pages"></div>
@@ -38,10 +38,10 @@
       <div class="board-wrap">
         <svg id="board" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <filter id="rough"><feTurbulence baseFrequency="0.03" numOctaves="2" result="n" seed="3"/>
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+            <filter id="rough" filterUnits="userSpaceOnUse" x="-400" y="-400" width="1600" height="1300"><feTurbulence baseFrequency="0.03" numOctaves="2" result="n" seed="3"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/></filter>
           </defs>
-          <g id="ink" filter="url(#rough)"></g>
+          <g id="ink"></g>
         </svg>
         <div id="thinking" class="thinking" hidden>✍️ Guru soch rahe hain…</div>
       </div>
@@ -51,7 +51,8 @@
         <button id="prev" title="Pichhla paragraph">⏮</button>
         <button id="play" class="primary">▶ Shuru karo</button>
         <button id="next" title="Agla paragraph">⏭</button>
-        <button id="interrupt" class="warn">✋ Ruko, doubt hai</button>
+        <button id="interrupt" class="warn" title="Ya M dabao aur bolo">✋ Ruko, doubt hai</button>
+        <span class="muted"><kbd>M</kbd> = bol ke poochho</span>
         <label class="speed">Raftaar
           <select id="pace">
             <option value="0.8">dheere</option>
@@ -66,7 +67,7 @@
         <div class="doubt-title">Poochho guru, ka nahi samjhe?</div>
         <div class="doubt-row">
           <input id="question" placeholder="jaise: 'embedding ka matlab?' (ya 🎤 dabake bolo)" />
-          <button id="mic" title="Dabake rakho aur bolo">🎤</button>
+          <button id="mic" title="Bolne ke liye dabao (ya M), phir se dabao bhejne ke liye">🎤</button>
           <button id="ask" class="primary">Poochho</button>
         </div>
         <div id="go-row" class="doubt-row" hidden>

@@ -1,4 +1,4 @@
-/* Carpathy frontend: PDF -> paragraphs -> Kanpuriya explanation with voice + whiteboard. */
+/* Guru frontend: PDF -> paragraphs -> Kanpuriya explanation with voice + whiteboard. */
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
@@ -321,7 +321,7 @@ function startPara(i) { hush(); S.history = []; runFrom(Math.max(0, Math.min(S.p
 function stopAll() { S.playId++; hush(); }
 
 // ---------------------------------------------------------------- doubts / interrupts
-function interrupt() {
+function interrupt(focus = true) {
   if (!["playing", "paused", "loading"].includes(S.mode)) return;
   S.playId++; hush();
   $("thinking").hidden = true;
@@ -329,7 +329,7 @@ function interrupt() {
   setMode("doubt");
   $("doubt").hidden = false; $("go-row").hidden = true;
   $("caption").textContent = "हाँ गुरु, बोलो — का नहीं समझे?";
-  $("question").value = ""; $("question").focus();
+  $("question").value = ""; if (focus) $("question").focus();
 }
 
 async function ask(q) {
@@ -372,7 +372,8 @@ const GO_RE = { test: (t) => GO_WORDS.test(t) && !NOT_WORDS.test(t) };
 let rec = null, chunks = [];
 async function toggleMic() {
   if (rec && rec.state === "recording") { rec.stop(); return; }
-  if (S.mode === "playing" || S.mode === "paused" || S.mode === "loading") interrupt();
+  if (S.mode === "playing" || S.mode === "paused" || S.mode === "loading") interrupt(false);
+  else if (S.mode === "idle") { S.savedBoard = ink.innerHTML; S.savedViewBox = board.getAttribute("viewBox"); setMode("doubt"); $("doubt").hidden = false; $("go-row").hidden = true; }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     chunks = []; rec = new MediaRecorder(stream);
@@ -383,7 +384,9 @@ async function toggleMic() {
       setStatus("sun rahe hain…", "busy");
       try {
         const r = await fetch("/api/stt", { method: "POST", body: fd });
-        const { transcript } = await r.json();
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.detail || r.statusText);
+        const transcript = d.transcript;
         if (!transcript) { setStatus("kuch sunai nahi diya", "doubt"); return; }
         $("question").value = transcript;
         if (S.mode === "await_go" && GO_RE.test(transcript) && transcript.split(/\s+/).length <= 5) goAhead();
@@ -391,6 +394,8 @@ async function toggleMic() {
       } catch (e) { setStatus("mic error: " + e.message, "doubt"); }
     };
     rec.start(); $("mic").classList.add("rec"); $("mic").textContent = "⏹";
+    setStatus("🎙 bolo… phir M dabao", "doubt");
+    $("caption").textContent = "🎙 सुन रहे हैं गुरु, बोलो… (बोल के फिर से M दबाओ)";
     setTimeout(() => rec && rec.state === "recording" && rec.stop(), 25000);
   } catch (e) { alert("Mic ki permission chahiye: " + e.message); }
 }
@@ -419,10 +424,14 @@ $("mic").onclick = toggleMic;
 $("go").onclick = goAhead;
 $("cancel-doubt").onclick = goAhead;
 document.addEventListener("keydown", (e) => {
+  // while recording, M always means "done, send it" — even if a text box has focus
+  if (e.code === "KeyM" && !e.repeat && rec && rec.state === "recording") { e.preventDefault(); toggleMic(); return; }
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   if (e.code === "Space") { e.preventDefault(); if (S.mode === "await_go") goAhead(); else interrupt(); }
+  // M: stop Guru and record a spoken question; press M again to send it
+  if (e.code === "KeyM" && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey && S.paras.length) { e.preventDefault(); toggleMic(); }
 });
 setMode("idle");
 
 // exposed for debugging/testing
-window.__carpathy = { S, explainCache };
+window.__guru = { S, explainCache };

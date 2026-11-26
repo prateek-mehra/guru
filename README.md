@@ -1,10 +1,10 @@
-# Carpathy — paper samjho, Kanpur style
+# Guru — paper samjho, Kanpur style
 
-Upload a research-paper PDF. A teacher, "Carpathy Guru", explains it **one paragraph at a time, slowly, in a Kanpuriya Hindi voice**, and draws on a whiteboard beside the paper as he talks.
+Upload a research-paper PDF. A teacher, "Guru", explains it **one paragraph at a time, slowly, in a Kanpuriya Hindi voice**, and draws on a whiteboard beside the paper as he talks.
 
 - The current paragraph is highlighted on the PDF. Click any paragraph to start from there.
 - Each sentence he speaks has its own drawing (boxes, arrows, graphs), which animates onto the board while he says it.
-- **Interrupt any time** with **✋ Ruko** (or `Space`). Type a question, or press 🎤 and ask it out loud, like "embedding ka matlab?". He answers on a fresh board, then waits.
+- **Interrupt any time by pressing `M`**: he stops, you ask your question out loud (like "embedding ka matlab?"), and you press `M` again to send it. You can also click **✋ Ruko** (or press `Space`) and type the question. He answers on a fresh board, then waits.
 - Say or type **"aage badho"** (or click ▶ Aage badho) and he goes back to the paragraph's board and carries on from the sentence where you stopped him. You can also ask another question first.
 
 ## Powered by Sarvam AI
@@ -29,5 +29,5 @@ Needs Python 3.9 or newer. Use Chrome, because the 🎤 button needs microphone 
 ## Files
 
 - `server.py`: FastAPI app. It serves `/api/explain`, `/api/ask`, `/api/tts` and `/api/stt`, plus the prompts.
-- `draw.py`: the whiteboard command language and its SVG renderer.
+- `draw.py`: the whiteboard command language, its SVG renderer, and a small layout engine (fits labels in shapes, keeps things from overlapping, keeps arrows attached).
 - `static/`: the UI (`index.html`, `app.js`, `style.css`).

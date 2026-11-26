@@ -27,7 +27,9 @@ main { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1
 .board-wrap { position: relative; background: #fdfdfb; border: 10px solid #9ca3af; border-radius: 10px; box-shadow: inset 0 0 40px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.15); }
 .board-wrap.doubt-mode { border-color: #f87171; }
 #board { width: 100%; display: block; aspect-ratio: 8 / 5; }
-#board text { font-family: Kalam, cursive; }
+#board text { font-family: Kalam, cursive; font-weight: 700; paint-order: stroke; stroke: #fdfdfb; stroke-width: 5px; stroke-linejoin: round; }
+/* hand-drawn wobble on strokes only; text stays crisp */
+#ink path, #ink rect, #ink circle, #ink line, #ink polyline, #ink polygon, #ink ellipse { filter: url(#rough); }
 .thinking { position: absolute; inset: 0; display: grid; place-items: center; font-family: Kalam, cursive; font-size: 26px; color: var(--muted); background: rgba(253,253,251,.75); }
 .caption { min-height: 64px; font-size: 19px; line-height: 1.5; background: var(--panel); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line); }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
