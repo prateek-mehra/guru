@@ -4,7 +4,7 @@ Upload a research-paper PDF. A teacher, "Guru", explains it **one paragraph at a
 
 - The current paragraph is highlighted on the PDF. Click any paragraph to start from there.
 - Each sentence he speaks has its own drawing (boxes, arrows, graphs), which animates onto the board while he says it.
-- **Interrupt any time by pressing `M`**: he stops, you ask your question out loud (like "embedding ka matlab?"), and you press `M` again to send it. You can also click **✋ Ruko** (or press `Space`) and type the question. He answers on a fresh board, then waits.
+- **Interrupt any time by pressing `M`**: he stops, you ask your question out loud (like "embedding ka matlab?"), and you press `M` again to send it. You can also press `Space` and type the question. He answers on a fresh board, then waits.
 - Say or type **"aage badho"** (or click ▶ Aage badho) and he goes back to the paragraph's board and carries on from the sentence where you stopped him. You can also ask another question first.
 
 ## Powered by Sarvam AI

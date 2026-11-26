@@ -29,7 +29,6 @@ function setMode(m) {
   const active = isActive();
   $("play").textContent = S.paused ? "▶ Chalo" : active ? "⏸ Ruko" : "▶ Shuru karo";
   $("play").disabled = !S.paras.length || (!active && !S.paused && (m === "doubt" || m === "await_go"));
-  $("interrupt").disabled = !(m === "playing" || m === "loading");
   $("prev").disabled = $("next").disabled = !S.paras.length || m === "doubt" || m === "await_go";
   $("para-count").textContent = S.paras.length ? `para ${S.cur + 1} / ${S.paras.length}` : "";
   if (S.paused) return setStatus("ruke hue — ▶ ya P dabao", "busy");
@@ -349,7 +348,6 @@ async function runFrom(i, stepFrom = 0, keepBoard = false) {
   S.cur = i; highlight(i);
   if (!keepBoard) clearBoard();
   setMode("loading");
-  $("board-label").textContent = `Whiteboard · para ${i + 1}`;
   $("thinking").hidden = false;
   let steps;
   try { steps = await explain(i); }
@@ -390,7 +388,6 @@ async function ask(q) {
   setMode("doubt"); setStatus("jawaab soch rahe hain…", "busy");
   document.querySelector(".board-wrap").classList.add("doubt-mode");
   clearBoard(); $("thinking").hidden = false; $("ask").disabled = true;
-  $("board-label").textContent = `Doubt: ${q.slice(0, 60)}`;
   try {
     const { steps } = await postJSON("/api/ask", { title: S.title, paper: S.paper, paragraph: S.paras[S.cur].text, question: q, history: S.history });
     if (id !== S.playId) return;
@@ -476,7 +473,6 @@ function togglePause() {
 $("play").onclick = togglePause;
 $("prev").onclick = () => startPara(S.cur - 1);
 $("next").onclick = () => startPara(S.cur + 1);
-$("interrupt").onclick = interrupt;
 $("ask").onclick = () => {
   const q = $("question").value;
   if (S.mode === "await_go" && GO_RE.test(q) && q.trim().split(/\s+/).length <= 3) goAhead(); else ask(q);
