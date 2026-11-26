@@ -20,7 +20,7 @@ around the zones by draw.Board.
 import math
 import shlex
 
-from draw import COLORS, W, H, Board, _arrowhead, _c, _t, fit_text, text_w
+from .draw import COLORS, W, H, Board, _arrowhead, _c, _t, fit_text, text_w
 
 SEMANTIC = ("title", "node", "link", "note", "formula", "graph", "plot", "saar", "summary")
 RAW = ("box", "rect", "circle", "text", "arrow", "line", "curve", "axes", "underline")

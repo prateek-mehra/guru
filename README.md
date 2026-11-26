@@ -23,7 +23,7 @@ While you listen to one paragraph, the next one is already being prepared, so th
 | Voice | `bulbul:v4-flash` text-to-speech, `hi-IN`, speaker `shubh_enhi_banking` (a Hindi–English code-mixed voice; set `TTS_SPEAKER` to change it, plain v3 names like `varun` also work) |
 | Listening to your questions | `saaras:v4` speech-to-text, `codemix` mode (handles Hindi and English mixed together) |
 
-The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. It never gives coordinates: [`layout.py`](layout.py) decides where everything goes and turns it into SVG.
+The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. It never gives coordinates: [`layout.py`](guru/whiteboard/layout.py) decides where everything goes and turns it into SVG.
 
 ## Run
 
@@ -36,7 +36,30 @@ Needs Python 3.9 or newer. Use Chrome, because the 🎤 button needs microphone 
 
 ## Files
 
-- `server.py`: FastAPI app. It serves `/api/explain`, `/api/ask`, `/api/tts` and `/api/stt`, plus the prompts.
-- `layout.py`: the whiteboard language. The model says *what* to draw (`TITLE`, `NODE`/`LINK` flowchart, `FORMULA`, `NOTE`, `GRAPH`/`PLOT`, `SAAR`) and this lays it out in fixed zones, so nothing overlaps.
-- `draw.py`: text measuring and the older coordinate commands, still accepted as a fallback.
-- `static/`: the UI (`index.html`, `app.js`, `style.css`).
+```
+Guru/
+├── guru/                  Python package (the app)
+│   ├── server.py          FastAPI app: /api/explain, /api/ask, /api/tts, /api/stt, plus the prompts
+│   ├── whiteboard/        the whiteboard language -> SVG
+│   │   ├── layout.py      semantic commands, laid out in fixed zones
+│   │   └── draw.py        text measuring and the older coordinate commands
+│   └── static/            the UI (index.html, app.js, style.css)
+├── tests/                 regression tests (python -m unittest)
+├── docs/                  README images
+├── run.sh                 one-time setup + run
+├── requirements.txt
+└── .env.example
+```
+
+- `guru/server.py`: FastAPI app. It serves `/api/explain`, `/api/ask`, `/api/tts` and `/api/stt`, plus the prompts.
+- `guru/whiteboard/layout.py`: the whiteboard language. The model says *what* to draw (`TITLE`, `NODE`/`LINK` flowchart, `FORMULA`, `NOTE`, `GRAPH`/`PLOT`, `SAAR`) and this lays it out in fixed zones, so nothing overlaps.
+- `guru/whiteboard/draw.py`: text measuring and the older coordinate commands, still accepted as a fallback.
+- `guru/static/`: the UI (`index.html`, `app.js`, `style.css`).
+
+## Tests
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+They run in mock mode, so they need no API key and make no calls to Sarvam.
