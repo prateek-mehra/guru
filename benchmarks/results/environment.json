@@ -1,0 +1,37 @@
+{
+  "run_id": "20261127T071718Z",
+  "machine": "Prateeks-MacBook-Air.local",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.9.6",
+  "processor": "arm",
+  "server": {
+    "ok": true,
+    "mock": false,
+    "model": "sarvam-105b",
+    "voice": "shubh_enhi_banking",
+    "tts_model": "bulbul:v4-flash"
+  },
+  "reps": 3,
+  "tts_chars": 400,
+  "usd_inr": 94.0,
+  "pricing_inr": {
+    "sarvam-105b": {
+      "input_per_m": 10.0,
+      "cached_input_per_m": 0.25,
+      "output_per_m": 25.0
+    },
+    "bulbul:v4-flash": {
+      "per_1k_chars": 2.0
+    },
+    "bulbul:v3": {
+      "per_1k_chars": 3.0
+    },
+    "saaras:v4": {
+      "per_minute": 0.49
+    }
+  },
+  "total_cost_inr": 84.4181,
+  "total_calls": 225,
+  "git_commit": "aa8d70409e453d5142fdbf5f500e615a56b28447",
+  "git_branch": "benchmarks/api-usage-2026-11-27"
+}

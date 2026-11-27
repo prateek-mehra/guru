@@ -34,6 +34,35 @@ cp .env.example .env    # then put your SARVAM_API_KEY in .env
 
 Needs Python 3.9 or newer. Use Chrome, because the 🎤 button needs microphone permission. To try the UI without calling Sarvam, set `MOCK=1`.
 
+## Benchmark results
+
+Every Sarvam-backed endpoint was measured on real calls: 5 classic AI papers (Transformer, BERT, GPT-3, ResNet, DDPM) × 3 paragraphs each (abstract, method, results) × 3 runs. That's 225 calls in total, run on a MacBook Air on 27 Nov 2026, for a total cost of ₹84.42 (≈ $0.90).
+
+<p align="center">
+  <img src="docs/benchmarks/summary.svg" width="100%" alt="Benchmark at a glance: explain p50 2.98 s, ask 2.24 s, TTS about 3.5 s, STT 0.78 s with a 33% error rate on clips over 30 s; TTS dominates cost per call.">
+</p>
+
+| Action | Model | p50 / p95 latency | Mean tokens in / out | Mean cost / call | Errors |
+|---|---|---:|---:|---:|---:|
+| Explain a paragraph | `sarvam-105b` | 2.98 s / 5.52 s | 12,608 / 365 | ₹0.026 | 0% |
+| Answer a doubt | `sarvam-105b` | 2.24 s / 3.16 s | 12,579 / 217 | ₹0.010 | 0% |
+| Voice (default) | `bulbul:v4-flash` | 3.56 s / 4.42 s | – | ₹0.68 | 0% |
+| Voice | `bulbul:v3` | 3.53 s / 4.06 s | – | ₹1.02 | 0% |
+| Listen to a doubt | `saaras:v4` | 0.78 s / 1.53 s | – | ₹0.21 | 33% (all clips > 30 s) |
+
+<p align="center">
+  <img src="docs/benchmarks/latency.svg" width="100%" alt="Latency p50 and p95 per endpoint">
+</p>
+<p align="center">
+  <img src="docs/benchmarks/cost.svg" width="100%" alt="Mean cost per call per endpoint">
+</p>
+
+- **The voice is 91% of the cost.** All the LLM calls together cost ₹1.61. `bulbul:v4-flash` is 33% cheaper than v3 at the same latency, so it stays the default.
+- **Prompt caching makes the LLM cheap.** About 89% of input tokens were billed at the cached rate.
+- **Sarvam's real-time STT rejects audio over 30 s,** so a long spoken doubt fails. The fix is to cap the recording length or use the batch API.
+
+Method, pricing sources, per-paper numbers and recommendations are in [benchmarks/RESULTS.md](benchmarks/RESULTS.md). To re-run: `.venv/bin/python benchmarks/run_benchmark.py`.
+
 ## Files
 
 ```
@@ -45,7 +74,8 @@ Guru/
 │   │   └── draw.py        text measuring and the older coordinate commands
 │   └── static/            the UI (index.html, app.js, style.css)
 ├── tests/                 regression tests (python -m unittest)
-├── docs/                  README images
+├── benchmarks/            API usage/latency/cost benchmark (run_benchmark.py, RESULTS.md)
+├── docs/                  README images (HLD + benchmark charts)
 ├── run.sh                 one-time setup + run
 ├── requirements.txt
 └── .env.example

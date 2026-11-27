@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 366" width="960" height="366" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<style>.lane{font-size:12px;font-weight:700;letter-spacing:1.2px;fill:#8A6A2E}.t{font-size:16px;font-weight:700;fill:#1C2541}.d{font-size:13.5px;fill:#1C2541}.note{font-size:12.5px;fill:#4A4F63;font-style:italic}.pt{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:12px;fill:#7A5418}.v{font-size:12.5px;font-weight:700;fill:#1C2541}.ax{font-size:11.5px;fill:#6B6F80}</style>
+<rect width="960" height="366" rx="14" fill="#FDF8EF"/>
+<text class="lane" x="24" y="34">MEAN COST PER CALL</text>
+<text class="note" x="24" y="54">Indian rupees, from Sarvam's published per-token / per-character / per-minute prices</text>
+<line x1="300.0" y1="76" x2="300.0" y2="326" stroke="#1C2541" stroke-opacity=".08"/>
+<text class="ax" x="300.0" y="344" text-anchor="middle">₹0.000</text>
+<line x1="435.0" y1="76" x2="435.0" y2="326" stroke="#1C2541" stroke-opacity=".08"/>
+<text class="ax" x="435.0" y="344" text-anchor="middle">₹0.268</text>
+<line x1="570.0" y1="76" x2="570.0" y2="326" stroke="#1C2541" stroke-opacity=".08"/>
+<text class="ax" x="570.0" y="344" text-anchor="middle">₹0.536</text>
+<line x1="705.0" y1="76" x2="705.0" y2="326" stroke="#1C2541" stroke-opacity=".08"/>
+<text class="ax" x="705.0" y="344" text-anchor="middle">₹0.804</text>
+<line x1="840.0" y1="76" x2="840.0" y2="326" stroke="#1C2541" stroke-opacity=".08"/>
+<text class="ax" x="840.0" y="344" text-anchor="middle">₹1.072</text>
+<text class="t" x="24" y="102" style="font-size:14px">explain a paragraph</text>
+<rect x="24" y="108" width="88" height="18" rx="9" fill="#FFFFFF" stroke="#B7873C"/>
+<text class="pt" x="68" y="121" text-anchor="middle">sarvam-105b</text>
+<rect x="300" y="94" width="13.0" height="18" rx="7" fill="#1C2541"/>
+<text class="v" x="323.0" y="108">₹0.026</text>
+<text class="t" x="24" y="148" style="font-size:14px">answer a doubt</text>
+<rect x="24" y="154" width="88" height="18" rx="9" fill="#FFFFFF" stroke="#B7873C"/>
+<text class="pt" x="68" y="167" text-anchor="middle">sarvam-105b</text>
+<rect x="300" y="140" width="5.0" height="18" rx="7" fill="#1C2541"/>
+<text class="v" x="315.0" y="154">₹0.010</text>
+<text class="t" x="24" y="194" style="font-size:14px">speak (TTS)</text>
+<rect x="24" y="200" width="74" height="18" rx="9" fill="#FFFFFF" stroke="#B7873C"/>
+<text class="pt" x="61" y="213" text-anchor="middle">bulbul:v3</text>
+<rect x="300" y="186" width="514.3" height="18" rx="7" fill="#1C2541"/>
+<text class="v" x="824.3" y="200">₹1.021</text>
+<text class="t" x="24" y="240" style="font-size:14px">speak (TTS)</text>
+<rect x="24" y="246" width="118" height="18" rx="9" fill="#FFFFFF" stroke="#B7873C"/>
+<text class="pt" x="83" y="259" text-anchor="middle">bulbul:v4-flash</text>
+<rect x="300" y="232" width="342.9" height="18" rx="7" fill="#1C2541"/>
+<text class="v" x="652.9" y="246">₹0.681</text>
+<text class="t" x="24" y="286" style="font-size:14px">listen (STT)</text>
+<rect x="24" y="292" width="74" height="18" rx="9" fill="#FFFFFF" stroke="#B7873C"/>
+<text class="pt" x="61" y="305" text-anchor="middle">saaras:v4</text>
+<rect x="300" y="278" width="104.1" height="18" rx="7" fill="#1C2541"/>
+<text class="v" x="414.1" y="292">₹0.207</text>
+</svg>

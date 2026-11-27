@@ -1,0 +1,6 @@
+action,model,calls,successes,error_rate,latency_mean_ms,latency_p50_ms,latency_p95_ms,latency_max_ms,upstream_mean_ms,input_chars_mean,input_tokens_mean,cached_input_tokens_mean,output_tokens_mean,total_tokens_mean,output_tokens_per_s_mean,output_chars_mean,audio_seconds_mean,realtime_factor_mean,stt_similarity_mean,retries_total,cost_inr_mean,cost_inr_total,cost_usd_mean,cost_usd_total,cost_inr_per_1k_input_chars
+explain,sarvam-105b,45,45,0.0,3325.0,2977.9,5519.4,6566.2,3312.8,990.5,12608.5,11218.5,364.6,12973.1,117.64,762.1,,,,0,0.02582,1.1619,0.000275,0.01236,0.02607
+ask,sarvam-105b,45,45,0.0,2261.8,2237.1,3164.4,3608.4,2250.0,990.5,12578.8,12430.9,216.8,12795.6,101.11,442.0,,,,0,0.01001,0.4503,0.000106,0.00479,0.0101
+tts,bulbul:v4-flash,45,45,0.0,3593.8,3564.7,4423.8,4840.4,3574.9,340.5,,,,,,450262.3,28.14,0.13,,0,0.68093,30.642,0.007244,0.32598,2.0
+tts,bulbul:v3,45,45,0.0,3436.5,3530.1,4060.8,4319.0,3421.1,340.5,,,,,,373942.9,23.37,0.149,,0,1.0214,45.963,0.010866,0.48897,3.0
+stt,saaras:v4,45,30,0.333,853.6,776.1,1533.3,1548.0,841.8,323.2,,,,,,321.0,25.31,0.034,0.898,15,0.2067,6.2009,0.002199,0.06597,0.63953
