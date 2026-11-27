@@ -25,6 +25,33 @@ While you listen to one paragraph, the next one is already being prepared, so th
 
 The PDF is parsed in the browser with pdf.js, which handles one- and two-column layouts, headings and hyphenation, and stops at References. The model writes a small script of `SAY:` and `DRAW:` lines. It never gives coordinates: [`layout.py`](guru/whiteboard/layout.py) decides where everything goes and turns it into SVG.
 
+## Model issues and fixes
+
+Problems hit with each Sarvam model while building Guru, and how they were worked around.
+
+**`sarvam-105b`**
+
+| Issue | Fix |
+|---|---|
+| With thinking on, replies were slow and reasoning used up the `max_tokens` budget, which sometimes left no lesson text. | Reasoning is turned off (`reasoning_effort: null`), which gives replies in about 1–2 s and keeps the whole budget for the answer. |
+| It was bad at whiteboard coordinates: giant boxes, arrows pointing at nothing, and text piled up at the bottom. | The model now only says *what* to draw (`TITLE`, `NODE`/`LINK`, `FORMULA`, `NOTE`, `GRAPH`/`PLOT`, `SAAR`). The server lays everything out in fixed zones, and no board overlaps. |
+| Sometimes Sarvam returned a 503 (overloaded), or the reply had no usable `SAY:` lines. | `call_llm` retries up to 3 times, and the error it raises includes the `finish_reason`. |
+| The context window is 128K tokens, and long papers (GPT-3) don't fit. | The paper sent as context is cut at 120K characters. Because the same system prompt and paper go out on every call, about 89% of input tokens are billed at the cached rate. |
+
+**Bulbul (`bulbul:v4-flash`, `bulbul:v3`)**
+
+| Issue | Fix |
+|---|---|
+| v4 Flash speakers (`shubh_enhi_banking`) and v3 speakers (`varun`, `shubh`) only work with their own model. | The model is picked from the speaker name: names in the form `name_lang_style` use `bulbul:v4-flash`, and plain names use `bulbul:v3`. |
+| Changing speed through Bulbul's `pace` meant generating the audio again. | The speed buttons (1x to 2x) change the browser's playback rate instead, with pitch preserved, so a change applies at once, even mid-sentence. |
+
+**`saaras:v4`**
+
+| Issue | Fix |
+|---|---|
+| Sarvam rejected Chrome's recording type, `audio/webm;codecs=opus`. | `/api/stt` sends just `audio/webm`, and if Sarvam still rejects it, resends as `application/octet-stream`. |
+| Real-time STT rejects audio over 30 s, so a long spoken doubt fails (the benchmark found 15 of 45 failures, all on clips of 31.6 s or more). | **Not fixed yet.** The plan is to cap recordings at about 28 s in `app.js`, or send longer clips to the batch API, and to retry as octet-stream only on content-type errors, since that retry currently doubles every failed call. |
+
 ## Run
 
 ```bash
