@@ -42,14 +42,6 @@ Every Sarvam-backed endpoint was measured on real calls: 5 classic AI papers (Tr
   <img src="docs/benchmarks/summary.svg" width="100%" alt="Benchmark at a glance: explain p50 2.98 s, ask 2.24 s, TTS about 3.5 s, STT 0.78 s with a 33% error rate on clips over 30 s; TTS dominates cost per call.">
 </p>
 
-| Action | Model | p50 / p95 latency | Mean tokens in / out | Mean cost / call | Errors |
-|---|---|---:|---:|---:|---:|
-| Explain a paragraph | `sarvam-105b` | 2.98 s / 5.52 s | 12,608 / 365 | ₹0.026 | 0% |
-| Answer a doubt | `sarvam-105b` | 2.24 s / 3.16 s | 12,579 / 217 | ₹0.010 | 0% |
-| Voice (default) | `bulbul:v4-flash` | 3.56 s / 4.42 s | – | ₹0.68 | 0% |
-| Voice | `bulbul:v3` | 3.53 s / 4.06 s | – | ₹1.02 | 0% |
-| Listen to a doubt | `saaras:v4` | 0.78 s / 1.53 s | – | ₹0.21 | 33% (all clips > 30 s) |
-
 <p align="center">
   <img src="docs/benchmarks/latency.svg" width="100%" alt="Latency p50 and p95 per endpoint">
 </p>
