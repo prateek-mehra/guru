@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 346" width="960" height="346" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<style>.lane{font-size:12px;font-weight:700;letter-spacing:1.2px;fill:#8A6A2E}.t{font-size:16px;font-weight:700;fill:#1C2541}.d{font-size:13.5px;fill:#1C2541}.note{font-size:12.5px;fill:#4A4F63;font-style:italic}.pt{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:12px;fill:#7A5418}.v{font-size:12.5px;font-weight:700;fill:#1C2541}.ax{font-size:11.5px;fill:#6B6F80}</style>
+<rect width="960" height="346" rx="14" fill="#FDF8EF"/>
+<text class="lane" x="24" y="34">BENCHMARK AT A GLANCE</text>
+<text class="note" x="24" y="54">measured on real Sarvam calls, 3 runs of each paragraph through each endpoint</text>
+<text class="lane" x="24" y="82" style="font-size:11px">ACTION</text>
+<text class="lane" x="210" y="82" style="font-size:11px">MODEL</text>
+<text class="lane" x="380" y="82" style="font-size:11px">CALLS</text>
+<text class="lane" x="450" y="82" style="font-size:11px">ERRORS</text>
+<text class="lane" x="530" y="82" style="font-size:11px">P50</text>
+<text class="lane" x="610" y="82" style="font-size:11px">P95</text>
+<text class="lane" x="690" y="82" style="font-size:11px">TOKENS IN / OUT</text>
+<text class="lane" x="840" y="82" style="font-size:11px">₹ / CALL</text>
+<rect x="12" y="96" width="936" height="36" rx="10" fill="#FBEBCD" fill-opacity=".55"/>
+<text class="t" x="24" y="120" style="font-size:14px">explain a paragraph</text>
+<text class="pt" x="210" y="120">sarvam-105b</text>
+<text class="d" x="380" y="120">45</text>
+<text class="d" x="450" y="120">0%</text>
+<text class="d" x="530" y="120">2.98 s</text>
+<text class="d" x="610" y="120">5.52 s</text>
+<text class="d" x="690" y="120">12,608 / 365</text>
+<text class="d" x="840" y="120">₹0.0258</text>
+<text class="t" x="24" y="160" style="font-size:14px">answer a doubt</text>
+<text class="pt" x="210" y="160">sarvam-105b</text>
+<text class="d" x="380" y="160">45</text>
+<text class="d" x="450" y="160">0%</text>
+<text class="d" x="530" y="160">2.24 s</text>
+<text class="d" x="610" y="160">3.16 s</text>
+<text class="d" x="690" y="160">12,579 / 217</text>
+<text class="d" x="840" y="160">₹0.0100</text>
+<rect x="12" y="176" width="936" height="36" rx="10" fill="#FBEBCD" fill-opacity=".55"/>
+<text class="t" x="24" y="200" style="font-size:14px">speak (TTS)</text>
+<text class="pt" x="210" y="200">bulbul:v3</text>
+<text class="d" x="380" y="200">45</text>
+<text class="d" x="450" y="200">0%</text>
+<text class="d" x="530" y="200">3.53 s</text>
+<text class="d" x="610" y="200">4.06 s</text>
+<text class="d" x="690" y="200">–</text>
+<text class="d" x="840" y="200">₹1.0214</text>
+<text class="t" x="24" y="240" style="font-size:14px">speak (TTS)</text>
+<text class="pt" x="210" y="240">bulbul:v4-flash</text>
+<text class="d" x="380" y="240">45</text>
+<text class="d" x="450" y="240">0%</text>
+<text class="d" x="530" y="240">3.56 s</text>
+<text class="d" x="610" y="240">4.42 s</text>
+<text class="d" x="690" y="240">–</text>
+<text class="d" x="840" y="240">₹0.6809</text>
+<rect x="12" y="256" width="936" height="36" rx="10" fill="#FBEBCD" fill-opacity=".55"/>
+<text class="t" x="24" y="280" style="font-size:14px">listen (STT)</text>
+<text class="pt" x="210" y="280">saaras:v4</text>
+<text class="d" x="380" y="280">45</text>
+<text class="d" x="450" y="280">33%</text>
+<text class="d" x="530" y="280">0.78 s</text>
+<text class="d" x="610" y="280">1.53 s</text>
+<text class="d" x="690" y="280">–</text>
+<text class="d" x="840" y="280">₹0.2067</text>
+<text class="note" x="24" y="328">total spend for the whole run: ₹84.42  ·  prices: Sarvam pay-as-you-go, Nov 2026</text>
+</svg>

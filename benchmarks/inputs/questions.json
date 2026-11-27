@@ -1,0 +1,18 @@
+{
+  "_note": "One spoken-style doubt per paragraph, sent to /api/ask. Written for this benchmark (Hinglish, like real users).",
+  "transformer": {"short_abstract": "recurrence hata ke sirf attention se kaam kaise chal gaya?",
+                  "medium_method": "multi-head attention mein alag alag heads ka fayda kya hai?",
+                  "long_results": "BLEU score ka matlab kya hota hai?"},
+  "bert": {"short_abstract": "bidirectional ka matlab kya hai yahan?",
+           "medium_method": "fine-tuning aur pre-training mein farak kya hai?",
+           "long_results": "GLUE benchmark kya hota hai?"},
+  "gpt3": {"short_abstract": "few-shot learning ka matlab kya hai?",
+           "medium_method": "175 billion parameters ka matlab kya hai, itna bada kyun?",
+           "long_results": "zero-shot aur few-shot mein accuracy kyun badalti hai?"},
+  "resnet": {"short_abstract": "residual learning ka matlab kya hai?",
+             "medium_method": "shortcut connection se gradient kaise behtar flow hota hai?",
+             "long_results": "top-5 error ka matlab kya hai?"},
+  "ddpm": {"short_abstract": "diffusion model mein noise kyun daalte hain?",
+           "medium_method": "reverse process kya seekhta hai?",
+           "long_results": "FID score kya batata hai?"}
+}
